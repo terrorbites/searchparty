@@ -47,7 +47,8 @@ GPS works on localhost and HTTPS websites. A plain HTTP address on your local ne
 - Search closure that clears helper positions and stops new search/chat activity.
 - Public privacy, cookie, terms/acceptable-use and safety pages, readable without JavaScript.
 - Adult/Terms acknowledgement for new profiles, optional GPS explanation, and browser-profile data export/deletion controls.
-- Advertising off by default; no analytics. Retention housekeeping for closed and inactive searches.
+- Consent-controlled AdSense preparation for anonymous public-homepage visitors on the permanent domains; separate advertising-choice controls remain available to members. Google approval and live delivery must be verified separately. No separate site analytics service.
+- Retention housekeeping for closed and inactive searches.
 - Optional PayPal support for the site's running costs, offered on the homepage. Searching and joining remain free; payment takes place on PayPal.
 
 Only dogs and cats are supported. Missing-person coordination needs a separate workflow and is outside this version.
@@ -79,7 +80,7 @@ After a build, `node tests/page-shell.mjs` checks the PHP HTML entry point on lo
 - `app/theme.css`, `app/room-theme.css`, `app/components/landing.css` — pet noticeboard styling; original illustration and generation notes in `design/ASSETS.md`.
 - `app/types.ts`, `API-CONTRACT.md` — shared API contract.
 - `index.html`, `web/main.tsx`, `vite.cpanel.config.ts` — static frontend entry and build configuration.
-- `cpanel/index.php` — HTML entry point, homepage-only AdSense loader and document-specific CSP.
+- `cpanel/index.php` — HTML entry point, guarded public-homepage AdSense integration and document-specific CSP; the separate `/ad-settings` document provides consent controls without requesting ads.
 - `cpanel/api.php`, `cpanel/server/` — PHP API, validation and SQLite schema.
 - `cpanel/.htaccess` — production routing, security headers and private-file restrictions.
 - `scripts/build-cpanel.mjs`, `scripts/php-router.php` — upload packaging and local PHP preview.

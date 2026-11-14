@@ -20,6 +20,7 @@ export const operator = {
 };
 const contact = { label: 'Email Simon Woolston', href: 'mailto:simonwoolston@live.com' };
 const dataControls = { label: "Manage this browser's data", href: '/?app=1&privacy=1' };
+const adSettings = { label: 'Privacy and advertising choices', href: '/ad-settings' };
 
 export const legalPages: Record<LegalPageKey, LegalPage> = {
   privacy: {
@@ -49,7 +50,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
           'Contract: to provide the coordination service you request, remember your guest identity, publish your appeal and contributions, manage membership and handle service requests.',
           'Consent: to share your live device location and display your optional profile photo. You can use the service without either. Stop sharing, remove your profile photo or contact us to withdraw; this does not undo earlier lawful use.',
           'Legitimate interests: to keep the service secure, prevent spam and misuse, investigate reports, respond to enquiries and provide the requested map. We must balance these purposes against your rights.',
-          'Legal obligation: where disclosure or preservation is required by applicable law. We do not sell your personal information or use advertising or analytics tracking in this release.',
+          'Legal obligation: where disclosure or preservation is required by applicable law. Optional advertising uses consent where required, separately from accepting the terms or sharing GPS. We do not sell search-room content or run a separate site analytics service.',
         ],
       },
       {
@@ -69,6 +70,22 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
           { label: 'OpenStreetMap privacy policy', href: 'https://osmfoundation.org/wiki/Privacy_Policy' },
           { label: 'OpenStreetMap information for map users', href: 'https://osmfoundation.org/wiki/Services_and_tile_users_privacy_FAQ' },
           { label: 'Brixly privacy and data-processing terms', href: 'https://brixly.uk/terms-and-conditions/' },
+        ],
+      },
+      {
+        heading: 'Advertising and your choices',
+        paragraphs: [
+          'Google AdSense is configured for the public homepage on searchpals.co.uk and www.searchpals.co.uk, for browsers without a guest-profile cookie. Ad availability depends on Google’s approval and delivery. Search rooms, the demo, profile and data controls, and policy pages do not load Google advertising or consent scripts. A separate advertising-settings page loads Google’s consent service, including for returning members, but keeps ad requests paused.',
+          'Where consent is required, Google’s published consent message lets you consent, decline or manage purposes and partners. Refusing does not limit the free search service. Use Privacy and advertising choices in the footer to change or withdraw your choice on this browser. This does not undo earlier lawful processing. We do not pass search codes, room content, profiles or shared GPS positions to the consent page or advertising system.',
+          'Loading Google’s service sends technical information such as your IP address, browser/device details and the public page address, including to deliver and remember your choices. With the relevant permissions, Google and the advertising partners identified in the message may use identifiers, cookies and ad interactions to deliver, personalise and measure ads and prevent fraud. IP addresses can indicate an approximate location. Partners’ purposes, storage periods and privacy information are available through Manage options.',
+          'Google acts as a separate controller: its advertising terms identify Google LLC for UK personal data and Google Ireland Limited for EEA and Swiss personal data. Other partners explain their roles in their linked notices. Processing can take place outside the UK, including in the US. Google describes adequacy arrangements, the UK Extension to the EU–US Data Privacy Framework and contractual safeguards where applicable. The links below explain these arrangements and Google’s retention and rights controls; deleting your Search Pals profile does not delete information held separately by these providers.',
+        ],
+        links: [
+          adSettings,
+          { label: 'Google’s use of information from partner sites', href: 'https://policies.google.com/technologies/partner-sites?hl=en-GB' },
+          { label: 'Google privacy notice', href: 'https://policies.google.com/privacy?hl=en-GB' },
+          { label: 'Google advertising controller terms', href: 'https://business.safety.google/adscontrollerterms/' },
+          { label: 'Google international-transfer safeguards', href: 'https://policies.google.com/privacy/frameworks?hl=en-GB' },
         ],
       },
       {
@@ -101,7 +118,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
   },
   cookies: {
     title: 'Cookies and browser storage',
-    summary: 'Advertising and analytics are off. Essential storage supports the features you request.',
+    summary: 'Storage for search features, optional advertising and how to change your choices.',
     updated: '14 November 2026',
     sections: [
       {
@@ -121,11 +138,21 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
         links: [{ label: 'OpenStreetMap privacy information', href: 'https://osmfoundation.org/wiki/Services_and_tile_users_privacy_FAQ' }],
       },
       {
-        heading: 'Optional tracking is off',
+        heading: 'Advertising and consent storage',
         paragraphs: [
-          'Search Pals currently loads no AdSense advertising script and uses no analytics tracking. There are no optional advertising or analytics choices to save in this version. Accepting the terms does not give advertising consent.',
-          'Advertising will stay off until an appropriate consent-management system is ready. Before introducing optional tracking, we will update this information and offer the required choice before it starts, including a way to withdraw consent.',
+          'Google AdSense is configured for the public homepage on our permanent domains, for browsers without a guest-profile cookie. Displaying ads depends on Google’s approval and delivery. Private search pages and policy pages do not load Google scripts. The separate advertising-settings page loads the consent service without requesting ads. We have no separate site analytics service; Google’s consent service can measure its messages and ads can include measurement.',
+          'Where consent is required, choose consent, decline or Manage options in Google’s message. Advertising requests stay paused until the consent service provides the required decision. Accepting the terms is not advertising consent. Consent storage can remember a refusal as well as an acceptance; loading the consent service itself sends technical information to Google.',
+          'Google’s published catalogue lists these possible first-party cookies set through its services on a publisher’s domain: FCCDCF for consent-message functionality, up to 13 months; FCNEC for consent-message measurement, up to 365 days; and __gads and __gpi for advertising/security, up to 13 months each. The actual cookies depend on your choices, browser and the services used. Other advertising partners and their storage details are listed in Manage options. Cookie expiry is separate from how long a provider retains information already received.',
         ],
+        links: [adSettings, { label: 'Google advertising and consent cookie catalogue', href: 'https://business.safety.google/adscookies/' }],
+      },
+      {
+        heading: 'Change or withdraw your advertising choice',
+        paragraphs: [
+          'Follow Privacy and advertising choices in the footer, then reopen Google’s message to change or withdraw consent. This works separately from your guest profile and does not restrict searching. Choices apply to the browser and site where they are saved; another device or clearing storage may require a new choice. If the consent service cannot load, the page explains this rather than claiming your choice was saved.',
+          'Withdrawing consent changes future use; it does not automatically erase information already held by Google or other partners. You can remove existing advertising cookies through your browser’s settings and use providers’ privacy controls. Avoid deleting sp_guest if you still need access to your searches; export or delete your profile first if appropriate.',
+        ],
+        links: [adSettings, { label: 'Google privacy controls and information', href: 'https://policies.google.com/privacy?hl=en-GB' }],
       },
       {
         heading: 'Following the PayPal support link',

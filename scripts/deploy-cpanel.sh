@@ -39,14 +39,14 @@ while IFS= read -r file || [[ -n "$file" ]]; do
   esac
   # Only the packaged website is eligible, never the source checkout or database.
   case "$file" in
-    index.php|index.html|api.php|ads.txt|favicon.svg|.htaccess|privacy.html|cookies.html|terms.html|safety.html|assets/*|vendor/leaflet/*|server/*) ;;
+    index.php|index.html|api.php|ads.txt|favicon.svg|.htaccess|privacy.html|cookies.html|terms.html|safety.html|ad-settings.html|assets/*|vendor/leaflet/*|server/*) ;;
     *) fail "Unexpected ZIP file: $file" ;;
   esac
   files+=("$file")
 done < "$run_dir/files.txt"
 [[ ${#files[@]} -gt 0 ]] || fail 'The deployment ZIP is empty.'
 unzip -q "$archive" -d "$stage"
-for required in index.php index.html api.php .htaccess ads.txt privacy.html cookies.html terms.html safety.html server/.htaccess server/api.php server/database.php server/schema.sql server/validation.php; do
+for required in index.php index.html api.php .htaccess ads.txt privacy.html cookies.html terms.html safety.html ad-settings.html assets/advertising.js server/.htaccess server/api.php server/database.php server/schema.sql server/validation.php; do
   [[ -f "$stage/$required" && ! -L "$stage/$required" ]] || fail "Missing runtime file: $required"
 done
 

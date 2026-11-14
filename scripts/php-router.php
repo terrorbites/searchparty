@@ -10,10 +10,15 @@ if (str_contains($path, '..') || preg_match('#/(?:server|\.)#', $path)) {
     return true;
 }
 $public = dirname(__DIR__) . '/release-upload';
+if (in_array($path, ['/ad-settings', '/ad-settings/', '/ad-settings.html'], true)) {
+    require $public . '/index.php';
+    return true;
+}
 if (preg_match('#^/(privacy|cookies|terms|safety)(?:/|\.html)?$#', $path, $matches)) {
     header('Content-Type: text/html; charset=utf-8');
     header("Content-Security-Policy: default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; frame-ancestors 'self'");
     header('Cache-Control: no-cache');
+    header('Referrer-Policy: strict-origin');
     header('X-Content-Type-Options: nosniff');
     readfile($public . '/' . $matches[1] . '.html');
     return true;

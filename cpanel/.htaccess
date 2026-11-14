@@ -1,6 +1,13 @@
 Options -Indexes
 DirectoryIndex index.php
 
+# Operator-enabled AdSense and published Google consent message. PHP additionally
+# restricts Google code to the production homepage and isolated choice document.
+<IfModule mod_env.c>
+SetEnv SEARCHPARTY_ADSENSE_ENABLED 1
+SetEnv SEARCHPARTY_CMP_READY 1
+</IfModule>
+
 <IfModule mod_rewrite.c>
 RewriteEngine On
 # Server code is loaded by api.php, never served directly.
@@ -9,6 +16,7 @@ RewriteRule (^|/)\. - [F,L]
 RewriteRule \.(?:sqlite|sqlite3|db|sql|log|bak|ini|env)(?:[-.].*)?$ - [F,L,NC]
 RewriteRule ^api(?:/.*)?$ api.php [QSA,L]
 RewriteRule ^(privacy|cookies|terms|safety)/?$ $1.html [L]
+RewriteRule ^ad-settings(?:/|\.html)?$ index.php [QSA,L]
 RewriteRule ^index\.html$ index.php [QSA,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -17,7 +25,7 @@ RewriteRule ^ index.php [L]
 
 <IfModule mod_headers.c>
 Header always set X-Content-Type-Options "nosniff"
-Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set Referrer-Policy "strict-origin"
 Header always set X-Frame-Options "SAMEORIGIN"
 Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
 <Files "index.html">
