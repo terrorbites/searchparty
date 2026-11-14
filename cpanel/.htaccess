@@ -1,6 +1,12 @@
 Options -Indexes
 DirectoryIndex index.php
 
+# These file protections also apply inside the separately routed WordPress shop.
+# Child rewrite rules can replace the parent rules, so enforce file access here.
+<FilesMatch "(?i)(^\.|\.(?:sqlite|sqlite3|db|sql|log|bak|ini|env)(?:[-.].*)?$|^wp-config\.php$)">
+Require all denied
+</FilesMatch>
+
 # Operator-enabled AdSense and published Google consent message. PHP additionally
 # restricts Google code to the production homepage and isolated choice document.
 <IfModule mod_env.c>
@@ -18,6 +24,9 @@ RewriteRule ^api(?:/.*)?$ api.php [QSA,L]
 RewriteRule ^(privacy|cookies|terms|safety)/?$ $1.html [L]
 RewriteRule ^ad-settings(?:/|\.html)?$ index.php [QSA,L]
 RewriteRule ^index\.html$ index.php [QSA,L]
+# The WordPress/WooCommerce shop has its own router and checkout under /shop.
+# Let its child .htaccess handle product URLs, REST requests and payment callbacks.
+RewriteRule ^shop(?:/|$) - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]
