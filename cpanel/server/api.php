@@ -7,7 +7,7 @@ final class Api
 {
     private const SESSION_SECONDS = 15552000;
     private const LOCATION_TTL = 1800000;
-    private const TERMS_VERSION = '2026-11-14';
+    private const TERMS_VERSION = '2026-11-14.1';
     private const SEARCH_COLUMNS = 's.id, s.code, s.pet_name AS petName, s.pet_type AS petType, s.description, s.photo, s.location_label AS locationLabel, s.lat, s.lng, s.last_seen_at AS lastSeenAt, s.instructions, s.status, s.join_paused AS joinPaused, s.created_at AS createdAt';
     private const MEMBER_COLUMNS = 'g.id, g.name, CASE WHEN m.avatar_hidden = 1 THEN NULL ELSE g.avatar END AS avatar, m.role, m.status, m.lat, m.lng, m.accuracy, m.location_at AS locationAt, m.location_version AS locationVersion, m.joined_at AS joinedAt';
     private int $now;

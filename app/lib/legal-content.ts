@@ -12,7 +12,7 @@ export interface LegalPage {
   sections: LegalSection[];
 }
 
-export const termsVersion = '2026-11-14';
+export const termsVersion = '2026-11-14.1';
 export const operator = {
   name: 'Simon Woolston',
   address: '91 Millside, Stalham, NR12 9RL, United Kingdom',
@@ -72,6 +72,15 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
         ],
       },
       {
+        heading: 'Optional contributions through PayPal',
+        paragraphs: [
+          'If you choose to support Search Pals, the link opens PayPal, which handles the payment under its own terms and privacy notice. We do not embed PayPal scripts or send it search codes, chat, profile identifiers or locations. Search Pals does not collect card details or PayPal passwords.',
+          'Simon receives payment information through PayPal, including your name, email address, amount, currency, date and transaction reference, and any message you provide. We use it to administer contributions, handle enquiries, refunds or disputes and keep necessary financial records. Our lawful bases are legitimate interests in managing voluntary support and legal obligations where record-keeping is required; contributing does not subscribe you to marketing.',
+          'Payment records are separate from the search database and are not included in the browser-profile export or deletion controls. We keep necessary records for as long as needed to resolve payment matters and meet applicable financial record-keeping duties, then remove records we control when no longer needed. Contact Simon about these records. PayPal determines its own retention and may process information internationally, as explained in its privacy notice.',
+        ],
+        links: [{ label: 'PayPal privacy notice', href: 'https://www.paypal.com/uk/legalhub/paypal/privacy-full' }, contact],
+      },
+      {
         heading: 'Retention and removal',
         paragraphs: [
           'Searches become eligible for deletion 90 days after closure, or after 180 days without an approved participant’s contribution, location update or management action. Reading and pending join requests do not extend this. Cleanup runs in batches; eligible records remain until processed. Older closed searches without a closure date start their 90 days when this retention policy is introduced.',
@@ -119,6 +128,13 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
         ],
       },
       {
+        heading: 'Following the PayPal support link',
+        paragraphs: [
+          'The optional support button is an ordinary link. It does not load PayPal scripts, images or cookies on Search Pals. PayPal opens only when you follow the link and manages cookies and privacy choices on its own website.',
+        ],
+        links: [{ label: 'PayPal privacy notice', href: 'https://www.paypal.com/uk/legalhub/paypal/privacy-full' }],
+      },
+      {
         heading: 'Your browser and the hosting preview',
         paragraphs: [
           'You can inspect or remove cookies and local storage in your browser’s site settings. Browser location permission is managed separately. Our privacy notice explains server-side data rights.',
@@ -141,6 +157,15 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
           'The current service is free and supports missing dogs and cats. It is not a missing-person service, emergency service, veterinary service or professional search operation. It does not verify identities, ownership, sightings or the suitability of volunteers.',
         ],
         links: [contact, { label: 'Search safety', href: '/safety' }],
+      },
+      {
+        heading: 'Optional support for the website',
+        paragraphs: [
+          'You may voluntarily contribute towards hosting and running Search Pals. Contributions go to Simon Woolston through the PayPal account simonwoolston@live.com, displayed as “Digital online”. Search Pals is independently run and is not a registered charity; these contributions are not offered as Gift Aid donations.',
+          'Searching and joining remain free. Contributing buys no priority, extra access or promise of a successful search. Choose the amount and any available payment frequency on PayPal; a monthly contribution applies only if you select that option there. PayPal processes payments under its own terms and may deduct its normal fees.',
+          'For a mistaken payment, refund request or payment question, email Simon with the transaction reference. Do not send card details or passwords. Any rights you have under applicable law and PayPal’s terms remain unaffected. If you choose recurring support, manage or cancel it through PayPal; deleting a Search Pals profile does not cancel a PayPal payment arrangement.',
+        ],
+        links: [contact, { label: 'Support Search Pals', href: '/#support-search-pals' }, { label: 'PayPal terms', href: 'https://www.paypal.com/uk/legalhub/paypal/useragreement-full' }],
       },
       {
         heading: 'Using a search room',

@@ -168,6 +168,12 @@ Replace `/PATH/TO/PHP` with the confirmed executable. `--dry-run` does not delet
 
 The privacy notice describes eligibility and batching rather than promising deletion at an exact minute. Do not set up a second maintenance database by accidentally using a different data directory from the API. Confirm provider backup/log deletion periods separately.
 
+## Optional PayPal support
+
+The homepage support card links directly to PayPal for `simonwoolston@live.com`, with `GBP` as the currency and no fixed amount. On 14 November 2026 the checkout opened successfully with the recipient name **Digital online**, which Simon confirmed is his account. Verification stopped before entering an amount or sending a payment; successful settlement and account limits are not tested.
+
+The link is configured in `app/components/SupportCard.tsx`. No PayPal SDK, iframe, tracking pixel, API credential, return URL or payment webhook is installed. The link suppresses the referrer and contains no search or profile information. It opens in a separate tab only when selected. PayPal may offer an optional recurring payment; the website does not preselect one or record payment success. Keep the recipient and purpose accurate if the PayPal account changes. Site profile export/deletion does not manage PayPal records or recurring payments.
+
 ## Common deployment issues
 
 | Symptom | Check |

@@ -77,6 +77,12 @@ Brixly's current DPA, linked from its [terms page](https://brixly.uk/terms-and-c
 - [ ] Review the final terms for fairness and consistency with actual behaviour. Avoid blanket “at your own risk” exclusions, mandatory indemnities, exclusive distant courts or unilateral changes that remove existing rights. Liability for death/personal injury caused by negligence and statutory consumer rights must not be disclaimed. [Consumer Rights Act 2015, Part 2](https://www.legislation.gov.uk/ukpga/2015/15/enacted) and [current CMA unfair-terms guidance](https://assets.publishing.service.gov.uk/media/6a609329b00f3323bf1a23f3/unfair_contract_terms_guidance.pdf).
 - [ ] Maintain the safety references: [GOV.UK police contact](https://www.gov.uk/contact-police), [council missing-dog service](https://www.gov.uk/check-council-missing-dog), and [RSPCA lost/found guidance](https://www.rspca.org.uk/en/adviceandwelfare/pets/lost). Do not add missing-person coordination under the existing pet workflow without a new safety, privacy and legal assessment.
 
+## Optional financial support
+
+- [ ] Review the receiving PayPal account's applicable fees, limits and eligibility, and keep its displayed recipient details consistent with the website. The operator confirmed **Digital online** for `simonwoolston@live.com`; only the checkout page was verified, not a completed payment. [PayPal support for businesses](https://www.paypal.com/uk/cshelp/article/how-do-i-raise-financial-support-for-my-business-help241).
+- [ ] Keep contributions voluntary and separate from search access. The site does not claim registered-charity status, Gift Aid eligibility or priority service for contributors.
+- [ ] Monitor payment enquiries, refunds and disputes, and set an appropriate financial-record retention schedule. Check the treatment of receipts for the operator's circumstances; calling a payment a donation does not establish its tax treatment. PayPal account records sit outside the application's profile export/deletion. [PayPal privacy notice](https://www.paypal.com/uk/legalhub/paypal/privacy-full).
+
 ## Review record
 
 Record the date, owner, evidence and outcome for every completed item. Revisit the notices and assessments when the domain, host, data flows, moderation approach, audience, advertising, retention or legal requirements change. Keep historic terms/privacy versions and the related acceptance/consent wording. The existence of this checklist is not evidence that its unchecked actions have been completed.

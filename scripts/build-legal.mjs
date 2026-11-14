@@ -18,7 +18,7 @@ const link = ({ href, label }) => {
   return `<a href="${escape(href)}"${href.startsWith('https://') ? ' target="_blank" rel="noopener noreferrer"' : ''}>${escape(label)}</a>`;
 };
 const footer = `<footer class="site-footer legal-footer"><div class="footer-identity"><span>search pals<span class="brand-dot">.</span></span><p>Search together. Bring them home.</p></div><nav aria-label="Information and privacy">${[
-  { href: '/privacy', label: 'Privacy' }, { href: '/cookies#cookie-settings', label: 'Cookie information' }, { href: '/terms', label: 'Terms' }, { href: '/safety', label: 'Search safety' }, { href: '/?app=1&privacy=1', label: 'Your data' }
+  { href: '/privacy', label: 'Privacy' }, { href: '/cookies#cookie-settings', label: 'Cookie information' }, { href: '/terms', label: 'Terms' }, { href: '/safety', label: 'Search safety' }, { href: '/?app=1&privacy=1', label: 'Your data' }, { href: '/#support-search-pals', label: 'Support Search Pals' }
 ].map(link).join('')}</nav></footer>`;
 
 for (const [key, page] of Object.entries(legalPages)) {

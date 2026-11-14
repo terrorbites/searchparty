@@ -4,7 +4,7 @@ const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:8789';
 if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw new Error('Privacy integration tests only run on localhost.');
 let checks = 0;
 const check = (value, message) => { assert.ok(value, message); checks++; };
-const acknowledgement = { termsAccepted: true, adultConfirmed: true, termsVersion: '2026-11-14' };
+const acknowledgement = { termsAccepted: true, adultConfirmed: true, termsVersion: '2026-11-14.1' };
 function client() {
   let cookie = '';
   const request = async (path, method = 'GET', data, overrideCookie) => {
@@ -44,7 +44,7 @@ await secondOwner(`${otherPath}/messages`, 'POST', { kind: 'chat', content: 'Oth
 await helper(`${ownedPath}/reports`, 'POST', { kind: 'sighting', lat: 51.5, lng: -0.1, radius: 50, note: 'Helper sighting', occurredAt: Date.now() });
 const ownerExport = await owner('/privacy/export');
 check(ownerExport.status === 200 && ownerExport.headers.get('content-disposition')?.includes('.json'), 'Export is a downloadable JSON response.');
-check(ownerExport.body.profile.id === ownerProfile.id && ownerExport.body.profile.termsVersion === '2026-11-14' && Number.isInteger(ownerExport.body.profile.adultConfirmedAt), 'Export includes own profile and acknowledgement record.');
+check(ownerExport.body.profile.id === ownerProfile.id && ownerExport.body.profile.termsVersion === acknowledgement.termsVersion && Number.isInteger(ownerExport.body.profile.adultConfirmedAt), 'Export includes own profile and acknowledgement record.');
 check(!JSON.stringify(ownerExport.body).includes('token_hash') && !JSON.stringify(ownerExport.body).includes(owner.cookie().split('=')[1]), 'Export excludes credentials.');
 check(ownerExport.body.ownedSearches.length === 1 && ownerExport.body.ownedSearches[0].code === ownedCode, 'Export contains only owned appeal records.');
 check(ownerExport.body.messages.length === 2 && ownerExport.body.messages.every(row => !row.content.includes('Private helper')), 'Export includes own contributions and excludes other participants’ messages.');

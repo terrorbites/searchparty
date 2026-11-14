@@ -9,7 +9,7 @@ function check(condition, message) { assert.ok(condition, message); checks++; }
 function client() {
   let cookie = '';
   return async (path, method = 'GET', data) => {
-    if (!cookie && path === '/session' && method === 'POST' && data && typeof data === 'object' && !Array.isArray(data)) data = { termsAccepted: true, adultConfirmed: true, termsVersion: '2026-11-14', ...data };
+    if (!cookie && path === '/session' && method === 'POST' && data && typeof data === 'object' && !Array.isArray(data)) data = { termsAccepted: true, adultConfirmed: true, termsVersion: '2026-11-14.1', ...data };
     const response = await fetch(`${base}/api${path}`, {
       method, headers: { ...(cookie ? { Cookie: cookie } : {}), ...(method !== 'GET' ? { 'Content-Type': 'application/json', Origin: base } : {}) },
       body: data === undefined ? undefined : JSON.stringify(data), redirect: 'manual',

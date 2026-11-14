@@ -47,6 +47,7 @@ GPS works on localhost and HTTPS websites. A plain HTTP address on your local ne
 - Public privacy, cookie, terms/acceptable-use and safety pages, readable without JavaScript.
 - Adult/Terms acknowledgement for new profiles, optional GPS explanation, and browser-profile data export/deletion controls.
 - Advertising off by default; no analytics. Retention housekeeping for closed and inactive searches.
+- Optional PayPal support for the site's running costs, offered on the homepage. Searching and joining remain free; payment takes place on PayPal.
 
 Only dogs and cats are supported. Missing-person coordination needs a separate workflow and is outside this version.
 
