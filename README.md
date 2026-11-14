@@ -37,6 +37,7 @@ GPS works on localhost and HTTPS websites. A plain HTTP address on your local ne
 - Guest profiles remembered by a private, HttpOnly device cookie; optional photo avatars.
 - Pet searches with a description, photo, last-seen location and time, and organiser instructions.
 - Random share codes and direct links; organiser approval before private room access.
+- Sharing guidance for local Facebook groups, WhatsApp/Nextdoor, vets, rescues and microchip contacts; people choose where to post their appeal.
 - An interactive map with last-seen pins, sightings, timestamped search areas and optional helper locations.
 - Shared chat and separate organiser updates, refreshed every five seconds while the page is visible.
 - Explicit start/stop location sharing, freshness indicators and server expiry. A location version prevents a delayed update from restarting sharing after a successful stop.
@@ -75,6 +76,7 @@ After a build, `node tests/page-shell.mjs` checks the PHP HTML entry point on lo
 ## Source layout
 
 - `app/page.tsx`, `app/components/`, `app/lib/` — React interface, map, browser helpers and local demo.
+- `app/theme.css`, `app/room-theme.css`, `app/components/landing.css` — pet noticeboard styling; original illustration and generation notes in `design/ASSETS.md`.
 - `app/types.ts`, `API-CONTRACT.md` — shared API contract.
 - `index.html`, `web/main.tsx`, `vite.cpanel.config.ts` — static frontend entry and build configuration.
 - `cpanel/index.php` — HTML entry point, homepage-only AdSense loader and document-specific CSP.

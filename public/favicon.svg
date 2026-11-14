@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <title>Search Pals</title>
-  <rect width="32" height="32" rx="9" fill="#24523f"/>
-  <g fill="#fffaf0">
+  <rect width="32" height="32" rx="9" fill="#e9ba50"/>
+  <g fill="#253b42">
     <ellipse cx="8.5" cy="13" rx="2.6" ry="3.5" transform="rotate(-25 8.5 13)"/>
     <ellipse cx="13" cy="8.5" rx="2.5" ry="3.3" transform="rotate(-8 13 8.5)"/>
     <ellipse cx="19" cy="8.5" rx="2.5" ry="3.3" transform="rotate(8 19 8.5)"/>

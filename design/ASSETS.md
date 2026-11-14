@@ -1,0 +1,9 @@
+# Search Pals illustration
+
+Created with the built-in image-generation tool on 14 November 2026 for the pet-themed redesign. This is an illustrative brand image, not a real missing-pet appeal.
+
+The website uses `public/assets/pet-pals.webp` (1536 × 1024, with transparency), compressed from the generated PNG for quicker loading. The original PNG remains in the local generated-image library and the ignored `outputs/pet-pals-source.png` file. No third-party image host or tracking request is needed.
+
+## Final generation prompt
+
+Use case: illustration-story. Asset type: original illustration for Search Pals, a neighbourhood lost dog and cat coordination website. Create one charming editorial gouache-and-coloured-pencil illustration of a shaggy golden dog with floppy ears and a small orange-and-white tabby cat sitting close beside it. Both are whole body, facing slightly towards the viewer, friendly alert expressions, real animal anatomy with character rather than human smiles. Dog wears a simple muted red collar, cat a deep blue collar. Style: independent British picture-book / community pet poster, handmade brush strokes, irregular ink contours, visible subtle painted texture, confident simple shapes, warm and reassuring. A few small pencil marks for tufts and whiskers. Loose natural placement, dog on left and cat on right, balanced landscape 3:2 composition, all ears, paws and tails fully inside frame, modest padding. Palette golden ochre, russet orange, cream-white, dark navy outlines, muted tomato red. Transparent background with no scenery, no floor rectangle and no painted backdrop. No words, letters, logos, borders, UI, badges or watermark. Avoid glossy 3D, photorealism, vector corporate clipart, oversized cartoon eyes, gradients or sentimental hearts. The animals should feel like the beloved pets in a thoughtfully illustrated local noticeboard.
