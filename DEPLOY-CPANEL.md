@@ -1,8 +1,12 @@
-# Deploy SearchParty to cPanel
+# Deploy Search Pals to cPanel
 
 This guide describes the PHP deployment package. It does not certify that a particular upload or deployment has completed.
 
-The user-selected hosting preview is [exquisite-cyan-aardvark.91-204-209-67.cpanel.site](https://exquisite-cyan-aardvark.91-204-209-67.cpanel.site/). It is a technical preview domain and may display the hosting provider's warning banner. The intended permanent domain is `searchparty.co.uk`; DNS and HTTPS for that domain must be verified separately before treating it as connected.
+The user-selected hosting preview is [exquisite-cyan-aardvark.91-204-209-67.cpanel.site](https://exquisite-cyan-aardvark.91-204-209-67.cpanel.site/). It is a technical preview domain and may display the hosting provider's warning banner. The intended permanent domain is `searchpals.co.uk`; DNS and HTTPS for that domain must be verified separately before treating it as connected.
+
+The Search Pals rebrand retains the existing `searchparty` repository/branch and ZIP paths, `SEARCHPARTY_*` environment variables, PHP namespace, `sp_guest` cookie, `searchparty-muted` preference key and private database location. Changing the visible brand does not require moving data or changing cPanel settings.
+
+Before connecting the permanent domain, add it to this hosting account with the intended document root, configure its DNS and valid HTTPS certificate, and verify the application through the new host. Leave `SEARCHPARTY_ORIGIN` unset when automatic origin detection works; a configured value must match the actual host being used. Share links use the current site's origin. Guest cookies and local storage are bound to the browser's current host, so a redirect does not transfer existing organiser access from the preview domain. If there are active searches, plan access continuity before redirecting or retiring the preview host; the app does not yet implement cross-domain profile transfer.
 
 ## Hosting requirements
 
@@ -54,9 +58,9 @@ The confirmed main-domain document root is `public_html`. Keep the source checko
 
 The committed `.cpanel.yml` runs `scripts/deploy-cpanel.sh`, which installs the already-built `deployment/searchparty-cpanel.zip` into the cPanel account's `$HOME/public_html`. It requires Bash, unzip and standard Unix file utilities, with no Node.js build on the hosting server. It checks the archive and destination paths before replacing files, backs up replaced files under `$HOME/.searchparty-deploy-backups/deploy.*/previous`, installs hidden access-control files, and leaves unrelated files and the private database in place. Old compiled assets are retained, so browsers with an earlier page can finish loading them.
 
-In **Git Version Control**, open **Manage** for SearchParty. Ensure the checked-out branch is `codex/searchparty-cpanel`. Under **Pull or Deploy**, click **Update from Remote**, then **Deploy HEAD Commit**. The second button runs deployment; pushing to GitHub or updating the checkout alone does not publish the site. cPanel requires a clean checkout and a committed root `.cpanel.yml`.
+In **Git Version Control**, open **Manage** for Search Pals. Ensure the checked-out branch is `codex/searchparty-cpanel`. Under **Pull or Deploy**, click **Update from Remote**, then **Deploy HEAD Commit**. The second button runs deployment; pushing to GitHub or updating the checkout alone does not publish the site. cPanel requires a clean checkout and a committed root `.cpanel.yml`.
 
-Use this deployment only while this account's main-domain `public_html` belongs to SearchParty. The deployment replaces the package's named files, including the root `.htaccess`, while preserving cPanel-generated PHP handler/INI blocks and existing `SetEnv SEARCHPARTY_ADSENSE_ENABLED`, `SEARCHPARTY_DATA_DIR` and `SEARCHPARTY_ORIGIN` settings. Other custom directives should be incorporated into `cpanel/.htaccess` before rebuilding. Private backups are retained for recovery and should be reviewed periodically; they are not database backups. Check the deployment output and the live verification steps below after deploying.
+Use this deployment only while this account's main-domain `public_html` belongs to Search Pals. The deployment replaces the package's named files, including the root `.htaccess`, while preserving cPanel-generated PHP handler/INI blocks and existing `SetEnv SEARCHPARTY_ADSENSE_ENABLED`, `SEARCHPARTY_DATA_DIR` and `SEARCHPARTY_ORIGIN` settings. Other custom directives should be incorporated into `cpanel/.htaccess` before rebuilding. Private backups are retained for recovery and should be reviewed periodically; they are not database backups. Check the deployment output and the live verification steps below after deploying.
 
 For subsequent releases, rebuild and package locally, copy `outputs/searchparty-cpanel.zip` to `deployment/searchparty-cpanel.zip`, and commit/push both source changes and the ZIP before repeating those two cPanel actions. Follow [cPanel's pull deployment guide](https://docs.cpanel.net/knowledge-base/web-services/guide-to-git-set-up-deployment/) for the interface.
 

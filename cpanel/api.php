@@ -28,7 +28,7 @@ try {
     if ($error->status === 429) header('Retry-After: 60');
     echo json_encode(['error' => $error->getMessage()], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 } catch (\Throwable $error) {
-    error_log('SearchParty API: ' . $error->getMessage());
+    error_log('Search Pals API: ' . $error->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'SearchParty could not save or load this change. Please try again.']);
+    echo json_encode(['error' => 'Search Pals could not save or load this change. Please try again.']);
 }

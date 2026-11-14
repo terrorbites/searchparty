@@ -23,6 +23,6 @@ try {
     } catch (Throwable $error) { $db->exec('ROLLBACK'); throw $error; }
     echo json_encode(['dryRun' => $dryRun, 'checkedAt' => $now, 'result' => $result], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR) . PHP_EOL;
 } catch (Throwable $error) {
-    fwrite(STDERR, 'SearchParty maintenance failed: ' . $error->getMessage() . PHP_EOL);
+    fwrite(STDERR, 'Search Pals maintenance failed: ' . $error->getMessage() . PHP_EOL);
     exit(1);
 }

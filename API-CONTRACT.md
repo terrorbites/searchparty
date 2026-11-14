@@ -1,4 +1,4 @@
-# SearchParty API contract
+# Search Pals API contract
 
 All endpoints use same-origin cookies and return `{error: string}` with an HTTP error status on failure. Responses are JSON except the public pet photo endpoint. Times are Unix milliseconds. Shared types are in app/types.ts. Unsafe requests require `Content-Type: application/json` and same origin. Successful mutation responses can be small `{ok: true}` unless specified; clients reload room state afterward. The production deployment target is PHP 8.1+ with PDO SQLite on cPanel; the earlier TypeScript/D1 handler is a reference implementation and does not include the later API additions below.
 

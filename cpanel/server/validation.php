@@ -81,7 +81,7 @@ function requestOrigin(): string
 
 function readBody(): array
 {
-    if (($_SERVER['HTTP_ORIGIN'] ?? '') !== requestOrigin()) fail('Open SearchParty on this site to make changes.', 403);
+    if (($_SERVER['HTTP_ORIGIN'] ?? '') !== requestOrigin()) fail('Open Search Pals on this site to make changes.', 403);
     $fetchSite = $_SERVER['HTTP_SEC_FETCH_SITE'] ?? '';
     if ($fetchSite !== '' && !in_array($fetchSite, ['same-origin', 'none'], true)) fail('Cross-site changes are not allowed.', 403);
     if (strtolower(trim(explode(';', (string)($_SERVER['CONTENT_TYPE'] ?? ''))[0])) !== 'application/json') fail('Send changes as JSON.', 415);

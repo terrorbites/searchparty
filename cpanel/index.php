@@ -64,8 +64,8 @@ try {
     if (!is_string($html)) throw new RuntimeException('The HTML shell could not be prepared.');
     echo $html;
 } catch (Throwable $error) {
-    error_log('SearchParty HTML entry: ' . $error->getMessage());
+    error_log('Search Pals HTML entry: ' . $error->getMessage());
     http_response_code(503);
     header("Content-Security-Policy: default-src 'none'; frame-ancestors 'none'; base-uri 'none'");
-    echo '<!doctype html><html lang="en"><meta charset="utf-8"><title>SearchParty</title><body><h1>SearchParty is temporarily unavailable</h1><p>Please try again shortly.</p></body></html>';
+    echo '<!doctype html><html lang="en"><meta charset="utf-8"><title>Search Pals</title><body><h1>Search Pals is temporarily unavailable</h1><p>Please try again shortly.</p></body></html>';
 }

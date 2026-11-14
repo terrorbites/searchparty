@@ -167,7 +167,7 @@ final class Api
         if ($path === ['privacy', 'export'] && $method === 'GET') {
             $actor = $this->requireGuest($guest);
             $this->rateLimit('privacy-export:' . $actor['id'], 6, 60000);
-            return ['body' => null, 'status' => 200, 'headers' => ['Content-Disposition' => 'attachment; filename="searchparty-data-' . gmdate('Y-m-d', (int)floor($this->now / 1000)) . '.json"'], 'stream' => function () use ($actor): void { Privacy::streamExport($this->db, $actor['id'], $this->now); }];
+            return ['body' => null, 'status' => 200, 'headers' => ['Content-Disposition' => 'attachment; filename="searchpals-data-' . gmdate('Y-m-d', (int)floor($this->now / 1000)) . '.json"'], 'stream' => function () use ($actor): void { Privacy::streamExport($this->db, $actor['id'], $this->now); }];
         }
         if ($path === ['privacy', 'delete'] && $method === 'POST') {
             $actor = $this->requireGuest($guest);

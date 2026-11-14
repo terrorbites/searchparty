@@ -3,7 +3,7 @@
 set -euo pipefail
 umask 077
 
-fail() { printf 'SearchParty deployment stopped: %s\n' "$*" >&2; exit 1; }
+fail() { printf 'Search Pals deployment stopped: %s\n' "$*" >&2; exit 1; }
 for tool in unzip mktemp cp mv chmod mkdir dirname awk cat; do
   command -v "$tool" >/dev/null || fail "Required command is unavailable: $tool"
 done
@@ -104,5 +104,5 @@ for file in "${files[@]}"; do
 done
 install_file index.php
 install_file index.html
-printf 'SearchParty deployed to %s\nPrevious files saved in %s\n' "$target" "$previous"
+printf 'Search Pals deployed to %s\nPrevious files saved in %s\n' "$target" "$previous"
 printf 'Unrelated files and the private search database were left in place.\n'

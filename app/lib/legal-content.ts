@@ -24,13 +24,13 @@ const dataControls = { label: "Manage this browser's data", href: '/?app=1&priva
 export const legalPages: Record<LegalPageKey, LegalPage> = {
   privacy: {
     title: 'Privacy notice',
-    summary: 'What SearchParty collects, who can see it and how you can control it.',
+    summary: 'What Search Pals collects, who can see it and how you can control it.',
     updated: '14 November 2026',
     sections: [
       {
         heading: 'Who is responsible',
         paragraphs: [
-          'Simon Woolston operates SearchParty and controls your personal information. Contact: simonwoolston@live.com, or 91 Millside, Stalham, NR12 9RL, United Kingdom.',
+          'Simon Woolston operates Search Pals and controls your personal information. Contact: simonwoolston@live.com, or 91 Millside, Stalham, NR12 9RL, United Kingdom.',
           'This service is for adults aged 18 or over searching for dogs and cats. Do not post information about missing people or children.',
         ],
         links: [contact],
@@ -98,7 +98,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
       {
         heading: 'Guest access cookie',
         paragraphs: [
-          'When you create a guest profile, SearchParty sets a first-party cookie called sp_guest. It contains a random access token, not your name or photo, and lets the server recognise your profile and permissions. It lasts up to 180 days unless you delete it sooner. It is HttpOnly, uses SameSite=Lax and is sent securely over HTTPS.',
+          'When you create a guest profile, Search Pals sets a first-party cookie called sp_guest. It contains a random access token, not your name or photo, and lets the server recognise your profile and permissions. It lasts up to 180 days unless you delete it sooner. It is HttpOnly, uses SameSite=Lax and is sent securely over HTTPS.',
           'This cookie is necessary for the guest service you request. Blocking or clearing it can make you lose access to searches you organise. Clearing it does not delete records held by the service; use the data controls first if you want those removed.',
         ],
         links: [dataControls],
@@ -114,7 +114,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
       {
         heading: 'Optional tracking is off',
         paragraphs: [
-          'SearchParty currently loads no AdSense advertising script and uses no analytics tracking. There are no optional advertising or analytics choices to save in this version. Accepting the terms does not give advertising consent.',
+          'Search Pals currently loads no AdSense advertising script and uses no analytics tracking. There are no optional advertising or analytics choices to save in this version. Accepting the terms does not give advertising consent.',
           'Advertising will stay off until an appropriate consent-management system is ready. Before introducing optional tracking, we will update this information and offer the required choice before it starts, including a way to withdraw consent.',
         ],
       },
@@ -122,7 +122,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
         heading: 'Your browser and the hosting preview',
         paragraphs: [
           'You can inspect or remove cookies and local storage in your browser’s site settings. Browser location permission is managed separately. Our privacy notice explains server-side data rights.',
-          'The temporary cpanel.site preview address may show a separate hosting-provider notice with its own settings. That notice is not SearchParty’s advertising consent mechanism; review its information before saving a preference.',
+          'The temporary cpanel.site preview address may show a separate hosting-provider notice with its own settings. That notice is not our advertising consent mechanism; review its information before saving a preference.',
           'Questions: Simon Woolston, simonwoolston@live.com, 91 Millside, Stalham, NR12 9RL, United Kingdom.',
         ],
         links: [{ label: 'Privacy notice', href: '/privacy' }, contact],
@@ -131,13 +131,13 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
   },
   terms: {
     title: 'Terms and acceptable use',
-    summary: 'The rules for using SearchParty and taking part in a pet search.',
+    summary: 'The rules for using Search Pals and taking part in a pet search.',
     updated: '14 November 2026',
     sections: [
       {
         heading: 'The service and operator',
         paragraphs: [
-          'SearchParty is provided by Simon Woolston, 91 Millside, Stalham, NR12 9RL, United Kingdom; email simonwoolston@live.com. These terms apply to the coordination service. You must be 18 or over and accept them to create a profile.',
+          'Search Pals is provided by Simon Woolston, 91 Millside, Stalham, NR12 9RL, United Kingdom; email simonwoolston@live.com. These terms apply to the coordination service. You must be 18 or over and accept them to create a profile.',
           'The current service is free and supports missing dogs and cats. It is not a missing-person service, emergency service, veterinary service or professional search operation. It does not verify identities, ownership, sightings or the suitability of volunteers.',
         ],
         links: [contact, { label: 'Search safety', href: '/safety' }],
@@ -190,7 +190,7 @@ export const legalPages: Record<LegalPageKey, LegalPage> = {
       {
         heading: 'Use the right help',
         paragraphs: [
-          'SearchParty is for adults coordinating dog and cat searches. It is not for missing children or adults. Contact police about a missing person. Call 999 if someone is in immediate danger or a crime is in progress; use 101 for non-emergency police matters.',
+          'Search Pals is for adults coordinating dog and cat searches. It is not for missing children or adults. Contact police about a missing person. Call 999 if someone is in immediate danger or a crime is in progress; use 101 for non-emergency police matters.',
           'For an injured animal, seek advice from a vet or appropriate animal-welfare service. Do not handle an animal if doing so is unsafe. Report a missing dog to your council’s dog warden and contact local vets, rescues and the microchip database where relevant.',
         ],
         links: [

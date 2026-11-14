@@ -1,10 +1,12 @@
-# SearchParty
+# Search Pals
 
 A phone-friendly website for coordinating a missing dog or cat search. Helpers open a link, choose a name and optionally add a photo. No app installation or helper account is required.
 
 The primary deployment is a **static React website with a PHP and SQLite API on cPanel hosting**. Node.js is needed to build the website locally; it is not needed on the hosting account. See [DEPLOY-CPANEL.md](DEPLOY-CPANEL.md) for deployment and database setup.
 
-The requested hosting preview is [the cPanel preview address](https://exquisite-cyan-aardvark.91-204-209-67.cpanel.site/). This is a technical preview domain and may display the hosting provider's banner. This documentation does not confirm deployment status or a DNS connection for `searchparty.co.uk`.
+The requested hosting preview is [the cPanel preview address](https://exquisite-cyan-aardvark.91-204-209-67.cpanel.site/). This is a technical preview domain and may display the hosting provider's banner. This documentation does not confirm deployment status or a DNS connection for `searchpals.co.uk`.
+
+Search Pals was previously branded SearchParty. The existing repository/branch, deployment ZIP filename, `SEARCHPARTY_*` environment variables, PHP namespace, private database path and browser storage identifiers are retained for compatibility with the live installation. Do not rename these when deploying the rebrand. The public brand and planned domain have changed; hosting and domain registration are separate steps.
 
 ## Build and run locally
 
