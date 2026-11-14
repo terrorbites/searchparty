@@ -1,5 +1,15 @@
 # Search Pals illustration
 
+## Dalmatian theme
+
+Created with the built-in image-generation tool on 14 November 2026. The homepage now uses `public/assets/dalmatian-pals.webp` (1536 × 1024, transparency preserved), compressed from the generated PNG. It depicts a Dalmatian and a tuxedo cat as a brand illustration, not real missing pets. The previous golden-dog image is retained as an unused source asset. The decorative `public/assets/dalmatian-spots.svg` is an original code-authored pattern; it has no external dependencies.
+
+Final generation prompt:
+
+Use case: illustration-story. Asset type: original illustration for Search Pals, a neighbourhood lost dog and cat coordination website. Create one charming editorial gouache-and-coloured-pencil illustration of a seated adult Dalmatian dog with distinctive small irregular black spots on white fur, floppy black ears, and a smaller black-and-white tuxedo cat sitting close beside it. Both are whole body, facing slightly towards the viewer, friendly alert expressions, believable animal anatomy with character rather than human smiles. Dalmatian wears a simple muted tomato red collar, cat a matching red collar. Style: independent British picture-book / community pet poster, handmade brush strokes, irregular ink contours, visible subtle painted texture, confident simple shapes, warm and reassuring. A few small pencil marks for fur and whiskers. Dog on left and cat on right, balanced landscape 3:2 composition, all ears, paws and tails fully inside frame, modest padding. Palette primarily white and inky almost-black, warm grey shading and restrained muted tomato red details. Transparent background with no scenery, no floor rectangle and no painted backdrop. No words, letters, logos, borders, UI, badges or watermark. Avoid glossy 3D, photorealism, corporate vector clipart, oversized cartoon eyes, gradients or sentimental hearts. The animals should feel like beloved pets in a thoughtfully illustrated local noticeboard. Strong clear silhouette, dog visibly a Dalmatian, sitting upright but relaxed.
+
+## Previous illustration
+
 Created with the built-in image-generation tool on 14 November 2026 for the pet-themed redesign. This is an illustrative brand image, not a real missing-pet appeal.
 
 The website uses `public/assets/pet-pals.webp` (1536 × 1024, with transparency), compressed from the generated PNG for quicker loading. The original PNG remains in the local generated-image library and the ignored `outputs/pet-pals-source.png` file. No third-party image host or tracking request is needed.

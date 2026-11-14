@@ -1,8 +1,8 @@
-/* The working search room stays calm and readable beside the warmer homepage. */
+/* Dalmatian details stay on quiet edges; search information keeps a plain surface. */
 .in-room .room-main {
-  --room-ink: #253b42;
-  --room-muted: #58686c;
-  --room-line: #d8dddc;
+  --room-ink: #222522;
+  --room-muted: #5c605b;
+  --room-line: #d8d9d2;
   color: var(--room-ink);
 }
 
@@ -27,30 +27,43 @@
 }
 
 .in-room .pet-panel {
-  background: #f8f1df;
-  border: 1px solid #87928e;
-  box-shadow: 3px 3px 0 #253b4214;
+  position: relative;
+  padding-top: 9px;
+  background: #fffefa;
+  border: 1px solid #8d9388;
+  box-shadow: 3px 3px 0 #22252214;
+}
+
+.in-room .pet-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 9px;
+  background: #fffefa url('/assets/dalmatian-spots.svg') repeat-x left top / 240px 120px;
+  pointer-events: none;
 }
 
 .in-room .pet-portrait {
-  background: #d9e8ee;
-  border-bottom: 1px solid #87928e;
+  background: #f0f0ea;
+  border-bottom: 1px solid #b8beb2;
 }
 
 .in-room .pet-placeholder {
-  color: #46636c;
-  background: #d9e8ee;
+  color: #222522;
+  background: #f0f0ea;
 }
 
 .in-room .pet-placeholder > span {
-  background: #f8f1df;
-  border: 1px solid #253b4226;
+  background: #fffefa;
+  border: 1px solid #22252226;
 }
 
 .in-room .portrait-tag {
-  background: #fffaf0;
-  color: #7f3828;
-  border: 1px solid #d7c6ae;
+  background: #fffefa;
+  color: #95402d;
+  border: 1px solid #d7b8ac;
   padding: 5px 8px;
   font-size: 11px;
   line-height: 1.4;
@@ -62,10 +75,10 @@
 }
 
 .in-room .instructions {
-  background: #fffaf0;
-  border-color: #dccfb3;
+  background: #f5f4ee;
+  border-color: #d8d9d2;
   border-radius: 9px;
-  color: #7f6440;
+  color: #5c605b;
   padding: 13px;
 }
 
@@ -102,7 +115,7 @@
 
 .in-room .room-main :is(.pet-details > .eyebrow, .team-panel .section-heading > .eyebrow) {
   font-size: 11px;
-  color: #8a422f;
+  color: #95402d;
 }
 
 .in-room .party-summary strong,
@@ -117,8 +130,8 @@
 
 .in-room .status-pill:not(.found) {
   color: var(--room-ink);
-  background: #f8f1df;
-  border-color: #d7c6a3;
+  background: #f3f3ed;
+  border-color: #b8c0b0;
 }
 
 .in-room .code-button > span {
@@ -168,21 +181,21 @@
 }
 
 .in-room .demo-banner {
-  background: #f8f1df;
-  border-color: #d7c6a3;
-  color: #665438;
+  background: #f3f2eb;
+  border-color: #c7c9bd;
+  color: #555a50;
   font-size: 13px;
   line-height: 1.6;
 }
 
 .in-room .demo-banner .text-button {
-  color: #7f3828;
+  color: #95402d;
   font-size: 12px;
 }
 
 .in-room .access-banner {
-  background: #eef5f8;
-  border-color: #bdcfd6;
+  background: #f2f3ee;
+  border-color: #c5cbbb;
 }
 
 .in-room :is(.access-icon, .access-banner h2, .map-heading h2, .section-heading h3) {
@@ -209,7 +222,7 @@
 }
 
 .in-room .map-footnote {
-  background: #f5f8f9;
+  background: #f6f7f2;
 }
 
 .in-room .map-footnote > svg {
@@ -222,7 +235,7 @@
 }
 
 .in-room :is(.activity-item, .message-card) {
-  border-color: #e6e9e7;
+  border-color: #e6e7e0;
 }
 
 .in-room .feed-tabs button {
@@ -242,18 +255,18 @@
 
 .in-room .message-form textarea {
   background: #fff;
-  border-color: #a8b7bb;
+  border-color: #aab3a2;
   color: var(--room-ink);
   font-size: 14px;
   line-height: 1.6;
 }
 
 .in-room .message-form textarea::placeholder {
-  color: #64777d;
+  color: #697162;
 }
 
 .in-room .message-tools .icon-button {
-  color: #596e75;
+  color: #5c6654;
   opacity: 1;
 }
 
@@ -267,14 +280,14 @@
   font-size: 10px;
   line-height: 1.4;
   letter-spacing: .25px;
-  color: #445a62;
-  background: #edf1f2;
+  color: #464f40;
+  background: #eff0e9;
   padding: 4px 6px;
 }
 
 .in-room .role-tag.organiser {
-  color: #294e5a;
-  background: #d9e8ee;
+  color: #222522;
+  background: #e6e8df;
 }
 
 .in-room .role-tag.moderator {
@@ -283,7 +296,7 @@
 }
 
 .in-room .member-actions {
-  border-color: #e6e9e7;
+  border-color: #e6e7e0;
 }
 
 .in-room .room-main :is(.member-actions .text-button, .activity-item .text-button, .abuse-item .text-button) {
@@ -326,7 +339,7 @@
   }
 
   .in-room .room-main :is(button, a, textarea):focus-visible {
-    outline: 3px solid #253b42;
+    outline: 3px solid #222522;
     outline-offset: 3px;
   }
 
@@ -341,24 +354,24 @@
 
   .in-room .mobile-tabs {
     background: #fff;
-    border-color: #cdd7da;
+    border-color: #d0d4c7;
     height: 64px;
   }
 
   .in-room .mobile-tabs button {
     font-size: 12px;
     min-height: 44px;
-    color: #586b72;
+    color: #5b6354;
   }
 
   .in-room .mobile-tabs button.active {
-    color: #253b42;
+    color: #222522;
     border-bottom: 3px solid #a94c36;
     font-weight: 700;
   }
 
   .in-room .mobile-tabs button:disabled {
-    color: #6f7d80;
+    color: #737b6c;
   }
 
   .in-room .demo-banner {

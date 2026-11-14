@@ -34,7 +34,7 @@ export default function LandingPage({ session, onStart, onOpenSearch, onDemo }: 
 
       <figure className="notice-pet-paper">
         <figcaption>Dogs, cats &amp; the people who love them</figcaption>
-        <img src="/assets/pet-pals.webp" width="1536" height="1024" fetchPriority="high" alt="A hand-painted illustration of a shaggy golden dog sitting beside a ginger and white cat."/>
+        <img src="/assets/dalmatian-pals.webp" width="1536" height="1024" fetchPriority="high" alt="A hand-painted illustration of a Dalmatian sitting beside a black-and-white cat."/>
         <div className="notice-paper-signoff"><PawPrint size={21} aria-hidden="true"/><span>Search together. Bring them home.</span><Heart size={21} aria-hidden="true"/></div>
       </figure>
 

@@ -1,83 +1,89 @@
-/* Search Pals: warm paper, an ink wordmark and simple, sturdy controls. */
+/* Search Pals: warm white, Dalmatian ink and a little red collar detail. */
 :root {
-  --ink: #253b42;
-  --green: #a94c36;
-  --green-dark: #863824;
-  --muted: #626963;
-  --line: #d7d4c6;
-  --paper: #f8f1df;
-  --white: #fffdf7;
-  --sage: #e9ede2;
+  --ink: #222522;
+  --green: #222522;
+  --green-dark: #080a08;
+  --muted: #5c605b;
+  --line: #d8d9d2;
+  --paper: #fbfaf6;
+  --white: #fffefa;
+  --sage: #efefea;
   --gold: #e2ad36;
-  --shadow: 0 4px 0 #253b4210;
+  --shadow: 0 4px 0 #22252210;
 }
 body { background: var(--paper); color: var(--ink); }
-button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline-color: #3e7087; }
-.site-header { height: 90px; background: #fffaf0; border-bottom: 1px solid #c7c9bb; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline-color: #a94c36; }
+.site-header { position: relative; height: 90px; padding-bottom: 7px; background: #fffefa; border-bottom: 1px solid #d8d9d2; }
+.site-header::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: #fffefa url('/assets/dalmatian-spots.svg') repeat-x left top / 240px 120px; pointer-events: none; }
 .header-inner { max-width: 1320px; padding: 0 44px; }
-.brand { gap: 11px; font-family: Georgia, 'Times New Roman', serif; font-size: 31px; font-weight: 800; letter-spacing: -1.7px; color: #253b42; white-space: nowrap; }
+.brand { min-height: 44px; gap: 11px; font-family: Georgia, 'Times New Roman', serif; font-size: 31px; font-weight: 800; letter-spacing: -1.7px; color: #222522; white-space: nowrap; }
 .brand-light { font-weight: inherit; }
 .brand-dot { color: #a94c36; }
-.brand-mark { width: 39px; height: 43px; border-radius: 45% 45% 43% 43%; background: #e9ba50; color: #253b42; border: 1px solid #d3a138; box-shadow: 0 2px 0 #cf9a3550; transform: rotate(-8deg); }
-.brand-mark svg { transform: rotate(8deg); }
-.nav-link { color: #445b62; font-size: 13px; }
-.button { border-radius: 5px; font-weight: 700; box-shadow: 0 3px 0 #783926; }
-.button:hover:not(:disabled) { box-shadow: 0 2px 0 #783926; }
-.button-secondary { background: #fffdf7; color: #253b42; border-color: #aeb9b6; box-shadow: none; }
-.button-secondary:hover:not(:disabled) { background: #eaf0ee; box-shadow: none; }
-.button-small { box-shadow: 0 2px 0 #783926; }
+.brand-mark { position: relative; isolation: isolate; overflow: hidden; flex-shrink: 0; width: 39px; height: 43px; border-radius: 45% 45% 43% 43%; background: #fffefa; color: #222522; border: 1px solid #222522; box-shadow: 0 2px 0 #222522; transform: rotate(-8deg); }
+.brand-mark::before { content: ''; position: absolute; inset: 0; background: url('/assets/dalmatian-spots.svg') repeat left top / 100px 50px; pointer-events: none; }
+.brand-mark::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: #a94c36; pointer-events: none; }
+.brand-mark svg { position: relative; z-index: 1; width: 27px; height: 27px; padding: 3px; background: #fffefa; border-radius: 50%; transform: rotate(8deg); }
+.nav-link { color: #424741; font-size: 13px; }
+.site-header .profile-button { min-width: 44px; min-height: 44px; justify-content: center; }
+.button { border-radius: 5px; font-weight: 700; box-shadow: 0 3px 0 #080a08; }
+.button:hover:not(:disabled) { box-shadow: 0 2px 0 #080a08; }
+.button-secondary { background: #fffefa; color: #222522; border-color: #9da399; box-shadow: none; }
+.button-secondary:hover:not(:disabled) { background: #f0f0ea; box-shadow: none; }
+.button-small { box-shadow: 0 2px 0 #080a08; }
 .button-small.button-secondary { box-shadow: none; }
-.text-button { color: #97452f; }
-.eyebrow { color: #5b6564; letter-spacing: 1.5px; }
-.count { color: #334f57; background: #e1ebed; }
+.text-button { color: #95402d; }
+.eyebrow { color: #5c605b; letter-spacing: 1.5px; }
+.count { color: #373b35; background: #eceee7; }
 .status-dot { background: #56836b; }
-.site-footer { max-width: 1320px; border-top: 1px solid #c7c9bb; padding: 28px 44px 34px; color: #536265; }
-.footer-identity > span { font-family: Georgia, 'Times New Roman', serif; font-weight: 800; font-size: 24px; letter-spacing: -1px; color: #253b42; white-space: nowrap; }
-.site-footer p { font-family: inherit; font-style: normal; font-size: 12px; color: #536265; }
+.avatar { background: #efefea; color: #424741; }
+.site-footer { max-width: 1320px; border-top: 1px solid #d8d9d2; padding: 28px 44px 34px; color: #5c605b; }
+.footer-identity > span { font-family: Georgia, 'Times New Roman', serif; font-weight: 800; font-size: 24px; letter-spacing: -1px; color: #222522; white-space: nowrap; }
+.site-footer p { font-family: inherit; font-style: normal; font-size: 12px; color: #5c605b; }
 .legal-footer nav { gap: 10px 18px; }
-.legal-footer nav a { color: #425c63; font-size: 12px; min-height: 36px; display: inline-flex; align-items: center; }
+.legal-footer nav a { color: #424741; font-size: 12px; min-height: 36px; display: inline-flex; align-items: center; }
 .legal-intro h1 { font-family: Georgia, 'Times New Roman', serif; letter-spacing: -1.3px; }
-.legal-section h2, .privacy-management h2, .storage-summary h2 { color: #253b42; }
-.legal-section p, .legal-section li, .legal-intro > p { color: #4f6265; }
-.legal-contents { background: #fffaf0; border-color: #c8cdc4; border-radius: 4px; }
-.legal-contents > a, .legal-section-links a { color: #3b5d66; }
-.legal-updated { color: #626963; }
-.privacy-management, .storage-summary { background: #e7edf0; border-color: #c5d1d3; border-radius: 5px; }
-.storage-summary p, .privacy-management p { color: #4a6067; }
+.legal-section h2, .privacy-management h2, .storage-summary h2 { color: #222522; }
+.legal-section p, .legal-section li, .legal-intro > p { color: #51584f; }
+.legal-contents { background: #fffefa; border-color: #d8d9d2; border-radius: 4px; }
+.legal-contents > a, .legal-section-links a { color: #424741; }
+.legal-updated { color: #5c605b; }
+.privacy-management, .storage-summary { background: #f0f0ea; border-color: #d0d3ca; border-radius: 5px; }
+.storage-summary p, .privacy-management p { color: #51584f; }
 .storage-status > span { color: #375b4a; background: #fafcf7; }
-.support-card { background: #eee7d4; border: 1px dashed #a9ab99; border-radius: 5px; box-shadow: none; }
-.support-card-icon { background: #f6debd; color: #8f442e; border-radius: 50%; }
-.support-card h2 { color: #253b42; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; letter-spacing: -.6px; }
-.support-card-copy p, .support-card-action p { color: #536265; }
-.modal { border-radius: 10px; background: #fffdf7; }
-.modal-heading h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 27px; color: #253b42; }
-.modal-heading p { color: #596b6d; }
-.field, .privacy-controls p, .location-explanation p { color: #4c6065; }
-.field input, .field textarea, .field select { border-color: #b8c1ba; background: #fff; }
-.agreement-field { color: #4c6065; }
+.support-card { background: #f4f3ed; border: 1px dashed #9da399; border-radius: 5px; box-shadow: none; }
+.support-card-icon { background: #f4e7df; color: #95402d; border-radius: 50%; }
+.support-card h2 { color: #222522; font-family: Georgia, 'Times New Roman', serif; font-size: 23px; letter-spacing: -.6px; }
+.support-card-copy p, .support-card-action p { color: #5c605b; }
+.modal { border-radius: 10px; background: #fffefa; }
+.modal-heading h2 { font-family: Georgia, 'Times New Roman', serif; font-size: 27px; color: #222522; }
+.modal-heading p { color: #5c605b; }
+.field, .privacy-controls p, .location-explanation p { color: #51584f; }
+.field input, .field textarea, .field select { border-color: #afb6a9; background: #fff; color: #222522; }
+.agreement-field { color: #51584f; }
 .agreement-field input { accent-color: #a94c36; }
 .button-danger { background: #993d34; border-color: #993d34; box-shadow: 0 3px 0 #6d2c25; }
-.share-code { background: #f7e7bc; border: 1px dashed #bb9f5f; }
-.share-code strong { color: #253b42; }
-.share-tips { margin-top: 24px; padding-top: 22px; border-top: 1px solid #d7d4c6; }
-.share-tips h3 { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; letter-spacing: -.6px; color: #253b42; }
-.share-tips > p { margin: 9px 0 15px; color: #52656a; font-size: 13px; line-height: 1.7; }
+.share-code { background: #f3f2eb; border: 1px dashed #9da399; }
+.share-code strong { color: #222522; }
+.share-tips { margin-top: 24px; padding-top: 22px; border-top: 1px solid #d8d9d2; }
+.share-tips h3 { font-family: Georgia, 'Times New Roman', serif; font-size: 23px; letter-spacing: -.6px; color: #222522; }
+.share-tips > p { margin: 9px 0 15px; color: #5c605b; font-size: 13px; line-height: 1.7; }
 .share-tips ul { padding: 0; margin: 0; list-style: none; }
-.share-tips li { display: flex; align-items: flex-start; gap: 12px; padding: 13px 0; border-bottom: 1px solid #e4e4d8; }
-.share-tips li > svg { margin-top: 3px; color: #9b5238; }
+.share-tips li { display: flex; align-items: flex-start; gap: 12px; padding: 13px 0; border-bottom: 1px solid #e4e5df; }
+.share-tips li > svg { margin-top: 3px; color: #95402d; }
 .share-tips li > div { flex: 1; min-width: 0; }
-.share-tips strong { display: block; font-size: 13px; color: #253b42; }
-.share-tips li p { font-size: 12px; line-height: 1.7; color: #52656a; margin-top: 4px; }
-.share-tips a { color: #81442f; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px; }
-.share-tips .share-tips-note { font-size: 12px; background: #e8eef0; border-radius: 4px; padding: 12px; margin-bottom: 0; }
+.share-tips strong { display: block; font-size: 13px; color: #222522; }
+.share-tips li p { font-size: 12px; line-height: 1.7; color: #5c605b; margin-top: 4px; }
+.share-tips a { color: #95402d; text-decoration: underline; text-underline-offset: 3px; min-height: 36px; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px; }
+.share-tips .share-tips-note { font-size: 12px; background: #f0f0ea; border-radius: 4px; padding: 12px; margin-bottom: 0; }
 @media (max-width: 760px) {
   .site-header, .in-room .site-header { height: 76px; }
   .header-inner { padding: 0 19px; }
   .brand { font-size: 27px; gap: 8px; letter-spacing: -1.5px; }
   .brand-mark { width: 32px; height: 36px; }
+  .brand-mark svg { width: 24px; height: 24px; }
   .site-header nav { gap: 12px; }
-  .site-header .button { min-height: 42px; padding: 8px 11px; }
-  .public-searches-link { min-width: 32px; min-height: 44px; }
+  .site-header .button { min-height: 44px; padding: 8px 11px; }
+  .public-searches-link { min-width: 44px; min-height: 44px; }
   .site-footer { padding: 23px 20px 28px; }
   .footer-identity { flex-wrap: wrap; align-items: baseline; }
   .footer-identity > span { font-size: 23px; }
