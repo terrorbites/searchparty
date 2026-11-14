@@ -1,0 +1,25 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+# Server code is loaded by api.php, never served directly.
+RewriteRule ^server(?:/|$) - [F,L]
+RewriteRule (^|/)\. - [F,L]
+RewriteRule \.(?:sqlite|sqlite3|db|sql|log|bak|ini|env)(?:[-.].*)?$ - [F,L,NC]
+RewriteRule ^api(?:/.*)?$ api.php [QSA,L]
+RewriteRule ^index\.html$ index.php [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=()"
+<Files "index.html">
+Header set Cache-Control "no-cache"
+</Files>
+</IfModule>

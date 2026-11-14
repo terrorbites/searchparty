@@ -1,0 +1,167 @@
+import assert from 'node:assert/strict';
+
+// Exercises real HTTP handlers and the local D1 database, with separate cookie jars.
+// Run against an isolated local preview, never a production search.
+const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:5173';
+if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw new Error('Integration tests only run on localhost.');
+let checks = 0;
+function check(condition, message) { assert.ok(condition, message); checks++; }
+function client() {
+  let cookie = '';
+  return async (path, method = 'GET', data) => {
+    const response = await fetch(`${base}/api${path}`, {
+      method, headers: { ...(cookie ? { Cookie: cookie } : {}), ...(method !== 'GET' ? { 'Content-Type': 'application/json', Origin: base } : {}) },
+      body: data === undefined ? undefined : JSON.stringify(data), redirect: 'manual',
+    });
+    if (response.headers.get('set-cookie')) cookie = response.headers.get('set-cookie').split(';')[0];
+    const text = await response.text();
+    let body; try { body = JSON.parse(text); } catch { throw new Error(`Non-JSON ${response.status} ${path}: ${text.slice(0, 180)}`); }
+    return { status: response.status, body, headers: response.headers };
+  };
+}
+const organiser = client(), helper = client(), outsider = client(), moderator = client();
+const timestamp = Date.now();
+// A real 2×2 RGB JPEG, generated with Pillow, with no private metadata.
+const photo = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAACAAIDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDIooorA88//9k=';
+const searchInput = { petName: `Test Scout ${timestamp}`, petType: 'dog', description: 'Integration test search. No real missing animal.', photo, locationLabel: 'Test meeting point', lat: 51.505, lng: -0.09, lastSeenAt: timestamp - 60000, instructions: 'Test only.' };
+const initial = await outsider('/session');
+check(initial.body.profile === null, 'New device must be anonymous.');
+for (const invalid of [null, [], 5, 'text']) check((await outsider('/session', 'POST', invalid)).status === 400, 'JSON request bodies must be objects.');
+const malformedJson = await fetch(`${base}/api/session`, { method: 'POST', headers: { Origin: base, 'Content-Type': 'application/json' }, body: '{not json}' });
+check(malformedJson.status === 400, 'Malformed JSON is rejected before processing a profile.');
+check((await outsider('/session', 'POST', { name: 'x'.repeat(300001) })).status === 413, 'Oversized JSON requests are rejected.');
+check((await outsider('/searches', 'POST', searchInput)).status === 401, 'Search creation requires a guest session.');
+const ownerSession = await organiser('/session', 'POST', { name: 'Test organiser' });
+check(ownerSession.status < 300 && ownerSession.body.profile.id, 'Organiser profile created.');
+check(/httponly/i.test(ownerSession.headers.get('set-cookie')), 'Guest cookie must be HttpOnly.');
+const ownerId = ownerSession.body.profile.id;
+check((await organiser('/session', 'POST', { name: 'Rejected SVG', avatar: 'data:image/svg+xml;base64,PHN2Zy8+' })).status === 400, 'SVG profile uploads are rejected.');
+check((await organiser('/session', 'POST', { name: 'Rejected fake JPEG', avatar: 'data:image/jpeg;base64,PHN2Zy8+' })).status === 400, 'MIME-disguised profile uploads are rejected.');
+check((await organiser('/session', 'POST', { name: 'Injected ID', id: 'another-guest' })).status === 400, 'Profile identity fields cannot be injected.');
+check((await organiser('/session')).body.profile.name === 'Test organiser', 'Rejected uploads leave the existing profile unchanged.');
+check((await organiser('/searches', 'POST', { ...searchInput, lat: 1000 })).status === 400, 'Invalid map coordinates rejected.');
+check((await organiser('/searches', 'POST', { ...searchInput, photo: 'data:image/svg+xml;base64,PHN2Zy8+' })).status === 400, 'SVG pet uploads are rejected.');
+const created = await organiser('/searches', 'POST', searchInput);
+check(created.status < 300 && created.body.code, 'Search is persisted with a code.');
+const path = `/searches/${created.body.code}`;
+const ownerRoom = (await organiser(path)).body;
+check(ownerRoom.me.role === 'organiser' && ownerRoom.me.status === 'approved', 'Creator becomes approved organiser.');
+const publicRoom = (await outsider(path)).body;
+check(publicRoom.search.petName === searchInput.petName, 'Public appeal is visible.');
+check(!publicRoom.members.length && !publicRoom.messages.length && !publicRoom.reports.length && !publicRoom.abuseReports.length, 'Public response has no private search data.');
+check(publicRoom.search.photo === `/api${path}/photo`, 'Room sends a photo URL instead of repeating base64 image data.');
+const photoResponse = await fetch(`${base}${publicRoom.search.photo}`);
+const photoBytes = new Uint8Array(await photoResponse.arrayBuffer());
+check(photoResponse.status === 200 && photoResponse.headers.get('content-type')?.startsWith('image/jpeg') && photoBytes[0] === 0xff && photoBytes[1] === 0xd8, 'Public photo endpoint serves JPEG bytes.');
+check(photoResponse.headers.get('x-content-type-options') === 'nosniff' && !!photoResponse.headers.get('cache-control'), 'Public photo endpoint sets safe media and cache headers.');
+check((await organiser('/session')).body.searches[0].search.photo === publicRoom.search.photo, 'Session summaries also use the public photo URL.');
+const helperSession = await helper('/session', 'POST', { name: 'Test helper', avatar: photo });
+const helperId = helperSession.body.profile.id;
+check((await helper(`${path}/join`, 'POST', { status: 'approved', role: 'moderator' })).status === 400, 'Joining cannot inject approval or moderator status.');
+check((await helper(`${path}/join`, 'POST', {})).status < 300, 'Helper can request access.');
+const pending = (await helper(path)).body;
+check(pending.me.status === 'pending' && !pending.members.length && !pending.messages.length, 'Pending helper is not admitted to private data.');
+check((await helper(`${path}/messages`, 'POST', { kind: 'chat', content: 'Pending person posting' })).status === 403, 'Pending helper cannot post.');
+check((await organiser(`${path}/members/${helperId}`, 'PATCH', { status: 'approved' })).status < 300, 'Organiser can approve helper.');
+check((await helper(`${path}/messages`, 'POST', { kind: 'update', content: 'Forged official update' })).status === 403, 'Helper cannot forge organiser announcement.');
+check((await helper(path, 'PATCH', { status: 'found' })).status === 403, 'Helper cannot close search.');
+check((await helper(`${path}/members/${ownerId}`, 'PATCH', { status: 'banned' })).status === 403, 'Helper cannot ban organiser.');
+check((await organiser(`${path}/messages`, 'POST', { kind: 'update', content: 'Please check the marked footpaths.' })).status < 300, 'Organiser announcement posted.');
+check((await helper(`${path}/messages`, 'POST', { kind: 'chat', content: 'I have checked the north footpath.' })).status < 300, 'Approved helper can chat.');
+check((await helper(`${path}/messages`, 'POST', { kind: 'chat', content: 'I have checked the north footpath.' })).status >= 400, 'Duplicate chat is blocked.');
+check((await helper(`${path}/messages`, 'POST', { kind: 'chat', content: 'Forged author', authorId: ownerId })).status === 400, 'Message author identity cannot be injected.');
+const firstLocationVersion = (await helper(path)).body.me.locationVersion;
+check(Number.isInteger(firstLocationVersion) && firstLocationVersion >= 0, 'Own membership exposes a valid location sharing version.');
+check((await helper(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 12 })).status === 400, 'Location updates require an explicit sharing version.');
+check((await helper(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 12, version: firstLocationVersion, locationAt: Date.now() })).status === 400, 'Location timestamps cannot be injected by clients.');
+check((await helper(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 12, version: firstLocationVersion })).status < 300, 'Location can be shared with the current version.');
+let room = (await organiser(path)).body;
+check(room.messages.every(message => message.authorAvatar === null) && room.members.find(member => member.id === helperId).avatar?.startsWith('data:image/jpeg;base64,'), 'Avatars appear once per member and are not repeated in every message.');
+check(room.members.some(m => m.id === helperId && m.lat === 51.506 && m.accuracy === 12), 'Separate organiser session sees helper location.');
+check(!(await outsider(path)).body.members.length, 'Outsider still cannot see shared locations.');
+check((await helper(`${path}/location`, 'POST', { stop: true })).status < 300, 'Sharing can be stopped.');
+check((await organiser(path)).body.members.find(m => m.id === helperId).lat === null, 'Stop sharing removes stored location.');
+const resumedLocationVersion = (await helper(path)).body.me.locationVersion;
+check(resumedLocationVersion === firstLocationVersion + 1, 'Stopping sharing increments the persisted version.');
+check((await helper(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 12, version: firstLocationVersion })).status === 409, 'A delayed callback with the old sharing version is rejected.');
+check((await organiser(path)).body.members.find(m => m.id === helperId).lat === null, 'Rejected stale callback cannot restart location sharing.');
+check((await helper(`${path}/reports`, 'POST', { kind: 'sighting', lat: 51.507, lng: -0.093, radius: 50, note: 'Test sighting by the gate', occurredAt: Date.now() - 30000 })).status < 300, 'Sighting is saved.');
+check((await helper(`${path}/reports`, 'POST', { kind: 'searched', lat: 51.508, lng: -0.094, radius: 80, note: 'Checked on foot', occurredAt: Date.now() - 30000 })).status < 300, 'Searched area is saved.');
+room = (await organiser(path)).body;
+const sighting = room.reports.find(r => r.kind === 'sighting');
+check(sighting && !sighting.confirmed, 'Sightings initially unconfirmed.');
+check((await helper(`${path}/reports/${sighting.id}`, 'PATCH', { confirmed: true })).status === 403, 'Helpers cannot self-confirm sightings.');
+check((await organiser(`${path}/reports/${sighting.id}`, 'PATCH', { confirmed: true })).status < 300, 'Organiser can confirm sighting.');
+const searched = room.reports.find(report => report.kind === 'searched');
+check((await organiser(`${path}/reports/${searched.id}`, 'PATCH', { confirmed: true })).status === 400, 'A searched area cannot be mislabelled as a confirmed sighting.');
+const announcement = room.messages.find(m => m.kind === 'update');
+const secondCreated = await organiser('/searches', 'POST', { ...searchInput, petName: `Second test ${timestamp}`, photo: null });
+check(secondCreated.status < 300 && secondCreated.body.code !== created.body.code, 'Separate search receives a distinct code.');
+const otherPath = `/searches/${secondCreated.body.code}`;
+check((await fetch(`${base}/api${otherPath}/photo`)).status === 404, 'A search without a pet photo returns 404 for its photo endpoint.');
+check((await organiser(`${otherPath}/messages/${announcement.id}`, 'DELETE', {})).status === 404, 'Message deletion is scoped to the selected search.');
+check((await organiser(`${otherPath}/reports/${sighting.id}`, 'PATCH', { confirmed: false })).status === 404, 'Sighting confirmation cannot cross search boundaries.');
+check((await organiser(`${otherPath}/reports/${sighting.id}`, 'DELETE', {})).status === 404, 'Map report deletion cannot cross search boundaries.');
+check((await organiser(`${otherPath}/members/${helperId}`, 'PATCH', { status: 'approved' })).status === 404, 'Membership changes cannot cross search boundaries.');
+check((await organiser(`${otherPath}/abuse`, 'POST', { targetType: 'message', targetId: announcement.id, reason: 'Cross-search message report' })).status === 404, 'Abuse reports cannot target messages in another search.');
+check((await organiser(`${otherPath}/abuse`, 'POST', { targetType: 'member', targetId: helperId, reason: 'Cross-search member report' })).status === 404, 'Abuse reports cannot target members of another search.');
+const unchanged = (await organiser(path)).body;
+check(unchanged.messages.some(message => message.id === announcement.id) && unchanged.reports.find(report => report.id === sighting.id).confirmed, 'Cross-search attempts leave original messages and sightings unchanged.');
+check((await helper(`${path}/reports/${searched.id}`, 'DELETE', {})).status < 300, 'Report authors can remove their own map reports.');
+check(!(await organiser(path)).body.reports.some(report => report.id === searched.id), 'Deleted map reports disappear for other members.');
+await organiser(`${path}/reports`, 'POST', { kind: 'searching', lat: 51.509, lng: -0.095, radius: 60, note: 'Organiser area', occurredAt: Date.now() - 1000 });
+const ownerReport = (await organiser(path)).body.reports.find(report => report.note === 'Organiser area');
+check(!!ownerReport, 'Organiser map report is persisted.');
+check((await helper(`${path}/reports/${ownerReport.id}`, 'DELETE', {})).status === 403, 'Helpers cannot delete another member’s map report.');
+check((await helper(`${path}/messages/${announcement.id}`, 'DELETE', {})).status === 403, 'Helper cannot delete another member message.');
+check((await helper(`${path}/abuse`, 'POST', { targetType: 'message', targetId: announcement.id, reason: 'Test moderation report' })).status < 300, 'Members can report messages.');
+const moderationQueue = (await organiser(path)).body.abuseReports;
+check(moderationQueue.length === 1 && !(await helper(path)).body.abuseReports.length, 'Moderation queue only visible to staff.');
+check((await organiser(`${otherPath}/abuse/${moderationQueue[0].id}`, 'PATCH', { resolved: true })).status === 404, 'Moderation report resolution cannot cross search boundaries.');
+check((await organiser(`${path}/abuse/${moderationQueue[0].id}`, 'PATCH', { resolved: true })).status < 300, 'Organiser resolves a report.');
+const modSession = await moderator('/session', 'POST', { name: 'Test moderator' });
+const modId = modSession.body.profile.id;
+await moderator(`${path}/join`, 'POST', {});
+check((await organiser(`${path}/members/${modId}`, 'PATCH', { status: 'approved', role: 'moderator' })).status < 300, 'Organiser appoints moderator.');
+check((await moderator(`${path}/members/${ownerId}`, 'PATCH', { status: 'banned' })).status === 403, 'Moderator cannot ban organiser.');
+check((await moderator(`${path}/members/${helperId}`, 'PATCH', { role: 'moderator' })).status === 403, 'Moderator cannot promote another member.');
+check((await moderator(`${path}/reports/${ownerReport.id}`, 'DELETE', {})).status < 300, 'Moderators can remove another member’s map report.');
+check((await helper(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 10, version: (await helper(path)).body.me.locationVersion })).status < 300, 'Sharing can restart using the refreshed version.');
+check((await moderator(`${path}/members/${helperId}`, 'PATCH', { status: 'banned' })).status < 300, 'Moderator removes disruptive helper.');
+const banned = (await helper(path)).body;
+check(banned.me.status === 'banned' && !banned.members.length && !banned.messages.length, 'Ban immediately revokes access.');
+check(!banned.reports.length && !banned.abuseReports.length && banned.me.lat === null && banned.me.lng === null, 'Banned response also redacts map reports, moderation reports and own location.');
+check((await helper(`${path}/join`, 'POST', {})).status === 403, 'Banned device cannot rejoin.');
+check((await organiser(path)).body.members.find(m => m.id === helperId).lat === null, 'Ban clears stored location.');
+const malicious = await fetch(`${base}/api/session`, { method: 'POST', headers: { Origin: 'https://another-site.invalid', 'Content-Type': 'application/json' }, body: JSON.stringify({ name: 'CSRF attempt' }) });
+check(malicious.status === 403, 'Cross-origin state changes rejected.');
+await organiser(path, 'PATCH', { joinPaused: true });
+await outsider('/session', 'POST', { name: 'Late helper' });
+check((await outsider(`${path}/join`, 'POST', {})).status >= 400, 'Paused joins reject newcomers.');
+await moderator(`${path}/location`, 'POST', { lat: 51.506, lng: -0.091, accuracy: 8, version: (await moderator(path)).body.me.locationVersion });
+check((await organiser(path, 'PATCH', { status: 'found' })).status < 300, 'Organiser can close search.');
+room = (await organiser(path)).body;
+check(room.search.status === 'found' && room.members.every(m => m.lat === null), 'Closing search clears all shared locations.');
+check((await moderator(`${path}/messages`, 'POST', { kind: 'chat', content: 'Posting after closure' })).status >= 400, 'Closed search rejects new chat.');
+check((await organiser(path, 'PATCH', { status: 'active' })).status === 409, 'Completed searches cannot be reopened.');
+check((await organiser(`${path}/reports/${sighting.id}`, 'DELETE', {})).status < 300, 'Staff can remove map reports after the search closes.');
+check((await organiser(`${path}/messages/${announcement.id}`, 'DELETE', {})).status < 300, 'Staff can remove messages after the search closes.');
+await organiser(otherPath, 'PATCH', { status: 'found' });
+const updated = await organiser('/session', 'POST', { name: 'Renamed organiser' });
+check(updated.body.profile.id === ownerId, 'Renaming preserves device identity.');
+
+// Last by design: this exhausts a guest's ordinary write allowance. Use only
+// the isolated local test database; the disposable search is left active.
+const quotaSearch = await moderator('/searches', 'POST', { ...searchInput, petName: `Quota test ${timestamp}`, photo: null });
+check(quotaSearch.status < 300 && quotaSearch.body.code, 'Quota regression has an isolated search.');
+const quotaPath = `/searches/${quotaSearch.body.code}`;
+const quotaVersion = (await moderator(quotaPath)).body.me.locationVersion;
+check((await moderator(`${quotaPath}/location`, 'POST', { lat: 51.51, lng: -0.1, accuracy: 9, version: quotaVersion })).status < 300, 'Quota regression starts with a shared location.');
+let quotaResponse;
+for (let index = 0; index < 130; index++) quotaResponse = await moderator('/session', 'POST', { name: 'Rejected quota probe', unsupported: true });
+check(quotaResponse.status === 429, 'Ordinary writes are blocked after the persistent write quota is exhausted.');
+check((await moderator(`${quotaPath}/location`, 'POST', { stop: true })).status < 300, 'An authenticated member can stop sharing even after exhausting the ordinary write quota.');
+const stoppedAtQuota = (await moderator(quotaPath)).body.me;
+check(stoppedAtQuota.lat === null && stoppedAtQuota.lng === null && stoppedAtQuota.locationAt === null, 'Stopping at quota still clears the stored coordinates.');
+check(stoppedAtQuota.locationVersion === quotaVersion + 1, 'Stopping at quota still revokes callbacks from the previous sharing version.');
+console.log(`Passed ${checks} HTTP integration checks across four independent guest sessions.`);
