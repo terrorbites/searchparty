@@ -6,6 +6,7 @@ import https from 'node:https';
 // images, redirects, Google resources or advertisements are ever executed/fetched.
 const base = localBase(process.env.TEST_BASE_URL || 'http://127.0.0.1:8789');
 const disabledBase = process.env.TEST_ADS_DISABLED_BASE_URL ? localBase(process.env.TEST_ADS_DISABLED_BASE_URL) : null;
+const enabledBase = process.env.TEST_ADS_ENABLED_BASE_URL ? localBase(process.env.TEST_ADS_ENABLED_BASE_URL) : null;
 const publisher = 'ca-pub-8610536439975607';
 const adScript = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisher}`;
 let checks = 0;
@@ -15,7 +16,7 @@ function localBase(value) {
   if (!['http:', 'https:'].includes(url.protocol) || !['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname) || url.username || url.password) throw new Error('Page-shell tests only connect to localhost.');
   return url.origin;
 }
-function read(path = '/', { host = 'searchparty.test', cookie, origin = base } = {}) {
+function read(path = '/', { host = 'searchparty.test', cookie, origin = enabledBase || base } = {}) {
   const target = new URL(path, origin);
   if (target.origin !== origin) throw new Error('Test requests must stay on the local server.');
   return new Promise((resolve, reject) => {
@@ -65,15 +66,18 @@ function noAds(page, label) {
   check(!/googlesyndication\.com|google-adsense-account|adsbygoogle\.js/i.test(page.html), `${label}: advertising code and verification meta must be absent.`);
   check(/(?:^|;)\s*default-src 'self'\s*(?:;|$)/.test(document.csp) && /(?:^|;)\s*script-src 'self'\s*(?:;|$)/.test(document.csp), `${label}: private page must retain the restrictive application CSP.`);
   check(!document.csp.includes("'strict-dynamic'") && !document.csp.includes("'unsafe-eval'"), `${label}: advertising script permissions must not reach this page.`);
+  return document.nonce;
 }
 
-const firstHomeNonce = hasAds(await read('/'), 'Anonymous public home');
-const secondHomeNonce = hasAds(await read('/'), 'Second anonymous public home');
+noAds(await read('/', { origin: base }), 'Advertising is off by default');
+const homepageCheck = enabledBase ? hasAds : noAds;
+const firstHomeNonce = homepageCheck(await read('/'), 'Anonymous public home');
+const secondHomeNonce = homepageCheck(await read('/'), 'Second anonymous public home');
 check(firstHomeNonce !== secondHomeNonce, 'Separate HTML responses must receive fresh unpredictable nonces.');
-hasAds(await read('/index.html'), 'HTML entry alias');
-hasAds(await read('/index.php'), 'PHP entry alias');
-hasAds(await read('/?utm_source=local-shell-test'), 'Public home with an ordinary campaign parameter');
-hasAds(await read('/', { cookie: 'sp_guest_extra=not-a-member-cookie' }), 'Unrelated cookie does not impersonate a guest profile');
+homepageCheck(await read('/index.html'), 'HTML entry alias');
+homepageCheck(await read('/index.php'), 'PHP entry alias');
+homepageCheck(await read('/?utm_source=local-shell-test'), 'Public home with an ordinary campaign parameter');
+homepageCheck(await read('/', { cookie: 'sp_guest_extra=not-a-member-cookie' }), 'Unrelated cookie does not impersonate a guest profile');
 
 for (const path of ['/?search=TESTCODE', '/?search=', '/?SEARCH=TESTCODE', '/?search[]=TESTCODE', '/?%73earch=TESTCODE', '/?demo=1', '/?demo=0', '/?create=1', '/?app=1', '/?app[]=1', '/search/TESTCODE', '/anything-private']) {
   noAds(await read(path), `Private route ${path}`);
@@ -86,8 +90,19 @@ for (const host of ['localhost:8789', 'localhost.:8789', 'preview.localhost:8789
 }
 
 if (disabledBase) {
-  noAds(await read('/', { origin: disabledBase }), 'Advertising disabled by server environment');
+  noAds(await read('/', { origin: disabledBase }), 'Advertising blocked without both readiness settings');
 } else {
   console.log('Environment-disable case skipped: set TEST_ADS_DISABLED_BASE_URL to a second local server started with SEARCHPARTY_ADSENSE_ENABLED=0.');
+}
+for (const slug of ['privacy', 'cookies', 'terms', 'safety']) {
+  for (const path of [`/${slug}`, `/${slug}/`, `/${slug}.html`]) {
+    const page = await read(path);
+    check(page.status === 200, `${path}: readable policy page must exist.`);
+    check(page.html.includes('Simon Woolston'), `${path}: operator identity must be present in the document.`);
+    check(!/<script\b|googlesyndication\.com|adsbygoogle\.js/i.test(page.html), `${path}: policies require neither JavaScript nor advertising.`);
+    check(!page.headers['set-cookie'], `${path}: reading policies must not create a guest cookie.`);
+    check(String(page.headers['content-security-policy']).includes("default-src 'none'"), `${path}: static policies must have a restrictive CSP.`);
+    check(page.html.includes('href="/privacy"') && page.html.includes('href="/terms"'), `${path}: policy navigation must remain available.`);
+  }
 }
 console.log(`Passed ${checks} page-shell assertions. Only local HTML/headers were fetched; no Google resources were loaded.`);

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 
-// Exercises real HTTP handlers and the local D1 database, with separate cookie jars.
+// Exercises real PHP HTTP handlers and the local SQLite database, with separate cookie jars.
 // Run against an isolated local preview, never a production search.
 const base = process.env.TEST_BASE_URL || 'http://127.0.0.1:5173';
 if (!['127.0.0.1', 'localhost'].includes(new URL(base).hostname)) throw new Error('Integration tests only run on localhost.');
@@ -9,6 +9,7 @@ function check(condition, message) { assert.ok(condition, message); checks++; }
 function client() {
   let cookie = '';
   return async (path, method = 'GET', data) => {
+    if (!cookie && path === '/session' && method === 'POST' && data && typeof data === 'object' && !Array.isArray(data)) data = { termsAccepted: true, adultConfirmed: true, termsVersion: '2026-11-14', ...data };
     const response = await fetch(`${base}/api${path}`, {
       method, headers: { ...(cookie ? { Cookie: cookie } : {}), ...(method !== 'GET' ? { 'Content-Type': 'application/json', Origin: base } : {}) },
       body: data === undefined ? undefined : JSON.stringify(data), redirect: 'manual',

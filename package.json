@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "build:cpanel": "node scripts/build-cpanel.mjs",
     "test:integration": "node tests/integration.mjs",
+    "test:privacy": "node tests/privacy.mjs",
     "test:pages": "node tests/page-shell.mjs",
     "build": "node scripts/build-cpanel.mjs",
     "dev:cpanel": "vite --config vite.cpanel.config.ts",

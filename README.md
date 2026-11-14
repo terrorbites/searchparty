@@ -42,6 +42,9 @@ GPS works on localhost and HTTPS websites. A plain HTTP address on your local ne
 - Server-enforced permissions, persistent rate limits, duplicate-message checks and a small phrase filter for human review.
 - Local chat muting, optional photo uploads and a clearly labelled interactive demo that does not create real searches or share GPS.
 - Search closure that clears helper positions and stops new search/chat activity.
+- Public privacy, cookie, terms/acceptable-use and safety pages, readable without JavaScript.
+- Adult/Terms acknowledgement for new profiles, optional GPS explanation, and browser-profile data export/deletion controls.
+- Advertising off by default; no analytics. Retention housekeeping for closed and inactive searches.
 
 Only dogs and cats are supported. Missing-person coordination needs a separate workflow and is outside this version.
 
@@ -52,13 +55,14 @@ npm run typecheck
 npm test
 ```
 
-`npm test` runs `tests/php-validation.php` against the PHP validation code used by the deployed API. PHP must be on `PATH`; alternatively, set the `PHP_BINARY` environment variable to the absolute path of the PHP executable. No running web server is needed for these validation checks.
+`npm test` runs PHP validation, privacy/retention and legacy database migration checks. PHP 8.1+ with PDO SQLite must be on `PATH`; alternatively, set `PHP_BINARY` to the absolute PHP executable. No running web server is needed. Migration checks create fresh isolated fixtures in `.sites-runtime/`, never use the configured production database, and retain those fixtures for inspection.
 
 With the PHP preview running on port 8788, run the multi-session API checks in another PowerShell terminal:
 
 ```powershell
 $env:TEST_BASE_URL = 'http://127.0.0.1:8788'
 npm run test:integration
+npm run test:privacy
 ```
 
 The integration tests create artificial searches in the local database and use separate cookie jars to exercise permissions, approval, chat, sightings, moderation and location sharing. The test runner refuses non-local URLs. This suite checks the actual API served at `TEST_BASE_URL`; use the PHP preview described above.
@@ -90,4 +94,6 @@ Location sharing pauses when the page is hidden or the phone is locked. This ver
 
 Photos are resized in the browser, checked on the server and stripped of JPEG metadata. Uploads have strict size limits. Profiles, photos and messages can be reported to the organiser; there is no external image moderation service or staffed review service. Phrase filtering is a baseline, not comprehensive automated moderation.
 
-Closing a search does not delete its appeal, photos or chat history. Before broader operation, define retention/deletion procedures, database backups and abuse handling, and test capacity for the expected audience. Keep the SQLite database outside all public document roots and out of upload bundles.
+Closing a search does not immediately delete its appeal, photos or chat history. Closed searches become eligible after 90 days and active searches after 180 days without qualifying activity; batched housekeeping performs removal. Schedule maintenance and confirm provider backup/log retention as described in [the deployment guide](DEPLOY-CPANEL.md). Keep the SQLite database outside all public document roots and out of upload bundles.
+
+Policy text does not certify legal compliance. [Operator launch checks](legal/LAUNCH-CHECKS.md) identify the ICO, Ofcom, hosting, complaint-handling and other practical assessments still needed. In particular, the adult declaration does not establish that children cannot access the service.

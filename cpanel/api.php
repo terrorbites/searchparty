@@ -8,6 +8,7 @@ ini_set('log_errors', '1');
 
 require_once __DIR__ . '/server/validation.php';
 require_once __DIR__ . '/server/database.php';
+require_once __DIR__ . '/server/privacy.php';
 require_once __DIR__ . '/server/api.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -20,7 +21,8 @@ try {
     $response = $api->handle();
     http_response_code($response['status']);
     foreach ($response['headers'] as $name => $value) header($name . ': ' . $value);
-    echo !empty($response['binary']) ? $response['body'] : json_encode($response['body'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+    if (isset($response['stream'])) $response['stream']();
+    else echo !empty($response['binary']) ? $response['body'] : json_encode($response['body'], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
 } catch (\SearchParty\ApiError $error) {
     http_response_code($error->status);
     if ($error->status === 429) header('Retry-After: 60');

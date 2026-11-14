@@ -7,9 +7,12 @@ final class Api
 {
     private const SESSION_SECONDS = 15552000;
     private const LOCATION_TTL = 1800000;
+    private const TERMS_VERSION = '2026-11-14';
     private const SEARCH_COLUMNS = 's.id, s.code, s.pet_name AS petName, s.pet_type AS petType, s.description, s.photo, s.location_label AS locationLabel, s.lat, s.lng, s.last_seen_at AS lastSeenAt, s.instructions, s.status, s.join_paused AS joinPaused, s.created_at AS createdAt';
     private const MEMBER_COLUMNS = 'g.id, g.name, CASE WHEN m.avatar_hidden = 1 THEN NULL ELSE g.avatar END AS avatar, m.role, m.status, m.lat, m.lng, m.accuracy, m.location_at AS locationAt, m.location_version AS locationVersion, m.joined_at AS joinedAt';
     private int $now;
+    private string $method = 'GET';
+    private ?string $activitySearchId = null;
 
     public function __construct(private \PDO $db) { $this->now = (int)floor(microtime(true) * 1000); }
 
@@ -26,7 +29,13 @@ final class Api
     private function first(string $sql, array $args = []): ?array { return $this->query($sql, $args)->fetch() ?: null; }
     private function rows(string $sql, array $args = []): array { return $this->query($sql, $args)->fetchAll(); }
     private function run(string $sql, array $args = []): int { return $this->query($sql, $args)->rowCount(); }
-    private function result(mixed $body, int $status = 200, array $headers = []): array { return ['body' => $body, 'status' => $status, 'headers' => $headers]; }
+    private function result(mixed $body, int $status = 200, array $headers = []): array
+    {
+        // Only successful writes by an approved participant extend inactivity
+        // retention. Reading/polling and pending join requests never extend it.
+        if ($this->method !== 'GET' && $this->activitySearchId !== null) $this->run('UPDATE searches SET activity_at = MAX(activity_at, ?) WHERE id = ?', [$this->now, $this->activitySearchId]);
+        return ['body' => $body, 'status' => $status, 'headers' => $headers];
+    }
     private function ok(int $status = 200): array { return $this->result(['ok' => true], $status); }
     private function uuid(): string
     {
@@ -114,6 +123,7 @@ final class Api
     public function handle(): array
     {
         $method = strtoupper((string)($_SERVER['REQUEST_METHOD'] ?? 'GET'));
+        $this->method = $method;
         if (!in_array($method, ['GET', 'POST', 'PATCH', 'DELETE'], true)) fail('Method not allowed.', 405);
         $urlPath = (string)parse_url((string)($_SERVER['REQUEST_URI'] ?? ''), PHP_URL_PATH);
         if (!str_starts_with($urlPath, '/api/')) fail('Endpoint not found.', 404);
@@ -124,6 +134,7 @@ final class Api
         // SQLite transaction, so ban/close checks cannot race the actual mutation.
         $this->db->exec('BEGIN IMMEDIATE');
         try {
+            Privacy::cleanup($this->db, $this->now);
             $response = $this->dispatch($path, $method, $body);
             $this->db->exec('COMMIT');
             return $response;
@@ -147,31 +158,48 @@ final class Api
         // A signed-in member must always be able to revoke their own location,
         // even when ordinary writes have exhausted a shared-network quota.
         $isLocationStop = $guest !== null && $method === 'POST' && count($path) === 3 && $path[0] === 'searches' && $path[2] === 'location' && count($body) === 1 && ($body['stop'] ?? false) === true;
-        if ($method !== 'GET' && !$isLocationStop) {
+        $isPrivacyDelete = $guest !== null && $method === 'POST' && $path === ['privacy', 'delete'];
+        if ($method !== 'GET' && !$isLocationStop && !$isPrivacyDelete) {
             $this->rateLimit('write-ip:' . $ipHash, 240, 60000);
             if ($guest) $this->rateLimit('write-guest:' . $guest['id'], 120, 60000);
-            if (random_int(0, 255) < 4) {
-                $this->run('DELETE FROM rate_limits WHERE resets_at < ?', [$this->now - 86400000]);
-                $this->run('DELETE FROM message_dedupes WHERE created_at < ?', [$this->now - 120000]);
-                $this->run('UPDATE memberships SET lat = NULL, lng = NULL, accuracy = NULL, location_at = NULL WHERE location_at IS NOT NULL AND location_at <= ?', [$this->now - self::LOCATION_TTL]);
-            }
+        }
+
+        if ($path === ['privacy', 'export'] && $method === 'GET') {
+            $actor = $this->requireGuest($guest);
+            $this->rateLimit('privacy-export:' . $actor['id'], 6, 60000);
+            return ['body' => null, 'status' => 200, 'headers' => ['Content-Disposition' => 'attachment; filename="searchparty-data-' . gmdate('Y-m-d', (int)floor($this->now / 1000)) . '.json"'], 'stream' => function () use ($actor): void { Privacy::streamExport($this->db, $actor['id'], $this->now); }];
+        }
+        if ($path === ['privacy', 'delete'] && $method === 'POST') {
+            $actor = $this->requireGuest($guest);
+            allowedFields($body, ['confirm', 'deleteOwnedSearches']);
+            if (($body['confirm'] ?? null) !== 'DELETE MY DATA') fail('Type DELETE MY DATA to confirm permanent deletion.');
+            $deleteOwned = array_key_exists('deleteOwnedSearches', $body) ? booleanField($body['deleteOwnedSearches'], 'Delete owned searches') : false;
+            $result = Privacy::deleteProfile($this->db, $actor['id'], $deleteOwned);
+            $cookie = 'sp_guest=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT' . (isHttps() ? '; Secure' : '');
+            return $this->result($result, 200, ['Set-Cookie' => $cookie]);
         }
 
         if ($path[0] === 'session' && count($path) === 1) {
             if ($method === 'GET') return $this->result($this->session($guest));
             if ($method !== 'POST') fail('Method not allowed.', 405);
-            allowedFields($body, ['name', 'avatar']);
+            allowedFields($body, ['name', 'avatar', 'termsAccepted', 'adultConfirmed', 'termsVersion']);
             $this->rateLimit('profile:' . ($guest['id'] ?? $ipHash), 12, 60000);
             $name = stringField($body['name'] ?? null, 'Name', 40);
             $avatar = !array_key_exists('avatar', $body) && $guest ? $guest['avatar'] : jpegDataUrl($body['avatar'] ?? null, 'Profile photo', 48000);
+            $acknowledging = !$guest || array_key_exists('termsAccepted', $body) || array_key_exists('adultConfirmed', $body) || array_key_exists('termsVersion', $body);
+            if ($acknowledging) {
+                if (($body['termsAccepted'] ?? null) !== true || ($body['adultConfirmed'] ?? null) !== true) fail('Confirm that you are 18 or over and accept the Terms before creating a profile.');
+                if (($body['termsVersion'] ?? null) !== self::TERMS_VERSION) fail('Please read and accept the current Terms.');
+            }
             if ($guest) {
                 $this->run('UPDATE guests SET name = ?, avatar = ? WHERE id = ?', [$name, $avatar, $guest['id']]);
+                if ($acknowledging) $this->run('UPDATE guests SET terms_accepted_at = ?, terms_version = ?, adult_confirmed_at = ? WHERE id = ?', [$this->now, self::TERMS_VERSION, $this->now, $guest['id']]);
                 return $this->result($this->session(array_merge($guest, ['name' => $name, 'avatar' => $avatar])));
             }
             $this->rateLimit('new-profile:' . $ipHash, 20, 3600000);
             $token = rtrim(strtr(base64_encode(random_bytes(32)), '+/', '-_'), '=');
             $created = ['id' => $this->uuid(), 'name' => $name, 'avatar' => $avatar, 'expiresAt' => $this->now + self::SESSION_SECONDS * 1000];
-            $this->run('INSERT INTO guests (id, token_hash, name, avatar, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?)', [$created['id'], hash('sha256', $token), $name, $avatar, $this->now, $created['expiresAt']]);
+            $this->run('INSERT INTO guests (id, token_hash, name, avatar, created_at, expires_at, terms_accepted_at, terms_version, adult_confirmed_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [$created['id'], hash('sha256', $token), $name, $avatar, $this->now, $created['expiresAt'], $this->now, self::TERMS_VERSION, $this->now]);
             $cookie = 'sp_guest=' . $token . '; Path=/; HttpOnly; SameSite=Lax; Max-Age=' . self::SESSION_SECONDS . (isHttps() ? '; Secure' : '');
             return $this->result($this->session($created), 201, ['Set-Cookie' => $cookie]);
         }
@@ -194,7 +222,7 @@ final class Api
             if ($count['total'] >= 20) fail('Close an existing search before creating another.', 409);
             $id = $this->uuid();
             do { $code = $this->code(); } while ($this->first('SELECT id FROM searches WHERE code = ?', [$code]));
-            $this->run("INSERT INTO searches (id, code, pet_name, pet_type, description, photo, location_label, lat, lng, last_seen_at, instructions, status, join_paused, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?)", [$id, $code, $petName, $petType, $description, $photo, $label, $lat, $lng, $lastSeen, $instructions, $this->now]);
+            $this->run("INSERT INTO searches (id, code, pet_name, pet_type, description, photo, location_label, lat, lng, last_seen_at, instructions, status, join_paused, created_at, activity_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?, ?)", [$id, $code, $petName, $petType, $description, $photo, $label, $lat, $lng, $lastSeen, $instructions, $this->now, $this->now]);
             $this->run("INSERT INTO memberships (search_id, guest_id, role, status, avatar_hidden, joined_at) VALUES (?, ?, 'organiser', 'approved', 0, ?)", [$id, $actor['id'], $this->now]);
             return $this->result(['code' => $code], 201);
         }
@@ -228,6 +256,7 @@ final class Api
         }
 
         $approved = $this->requireApproved($member);
+        $this->activitySearchId = $searchId;
         if (count($path) === 2 && $method === 'PATCH') {
             allowedFields($body, ['joinPaused', 'status']);
             if ($approved['role'] !== 'organiser') fail('Only the organiser can change search settings.', 403);
@@ -235,7 +264,7 @@ final class Api
             $paused = array_key_exists('joinPaused', $body) ? booleanField($body['joinPaused'], 'Paused joins') : (bool)$search['joinPaused'];
             $status = array_key_exists('status', $body) ? enumField($body['status'], ['active', 'found'], 'search status') : $search['status'];
             if ($search['status'] === 'found' && $status === 'active') fail('A completed search cannot be reopened. Create a new search if needed.', 409);
-            $this->run('UPDATE searches SET join_paused = ?, status = ? WHERE id = ?', [(int)$paused, $status, $searchId]);
+            $this->run("UPDATE searches SET join_paused = ?, status = ?, closed_at = CASE WHEN ? = 'found' THEN COALESCE(closed_at, ?) ELSE closed_at END WHERE id = ?", [(int)$paused, $status, $status, $this->now, $searchId]);
             if ($status === 'found') $this->run('UPDATE memberships SET lat = NULL, lng = NULL, accuracy = NULL, location_at = NULL, location_changed_at = MAX(location_changed_at, ?), location_version = location_version + 1 WHERE search_id = ?', [$this->now, $searchId]);
             return $this->ok();
         }

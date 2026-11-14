@@ -39,14 +39,14 @@ while IFS= read -r file || [[ -n "$file" ]]; do
   esac
   # Only the packaged website is eligible, never the source checkout or database.
   case "$file" in
-    index.php|index.html|api.php|ads.txt|favicon.svg|.htaccess|assets/*|vendor/leaflet/*|server/*) ;;
+    index.php|index.html|api.php|ads.txt|favicon.svg|.htaccess|privacy.html|cookies.html|terms.html|safety.html|assets/*|vendor/leaflet/*|server/*) ;;
     *) fail "Unexpected ZIP file: $file" ;;
   esac
   files+=("$file")
 done < "$run_dir/files.txt"
 [[ ${#files[@]} -gt 0 ]] || fail 'The deployment ZIP is empty.'
 unzip -q "$archive" -d "$stage"
-for required in index.php index.html api.php .htaccess ads.txt server/.htaccess server/api.php server/database.php server/schema.sql server/validation.php; do
+for required in index.php index.html api.php .htaccess ads.txt privacy.html cookies.html terms.html safety.html server/.htaccess server/api.php server/database.php server/schema.sql server/validation.php; do
   [[ -f "$stage/$required" && ! -L "$stage/$required" ]] || fail "Missing runtime file: $required"
 done
 
@@ -75,7 +75,7 @@ if [[ -f "$target/.htaccess" ]]; then
     /^# (php -- BEGIN cPanel-generated handler|BEGIN cPanel-generated php ini directives)/ { keeping = 1 }
     keeping { print }
     /^# (php -- END cPanel-generated handler|END cPanel-generated php ini directives)/ { keeping = 0; next }
-    !keeping && tolower($0) ~ /^[[:space:]]*setenv[[:space:]]+searchparty_(adsense_enabled|data_dir|origin)[[:space:]]+/ { print }
+    !keeping && tolower($0) ~ /^[[:space:]]*setenv[[:space:]]+searchparty_(adsense_enabled|cmp_ready|data_dir|origin)[[:space:]]+/ { print }
     END { if (keeping) exit 1 }
   ' "$target/.htaccess" > "$run_dir/hosting-directives.txt" || fail 'An existing cPanel PHP configuration block is incomplete.'
   if [[ -s "$run_dir/hosting-directives.txt" ]]; then

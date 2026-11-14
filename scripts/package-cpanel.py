@@ -5,7 +5,7 @@ from zipfile import ZIP_DEFLATED, ZipFile
 root = Path(__file__).resolve().parents[1]
 source = root / 'release-upload'
 output = root / 'outputs' / 'searchparty-cpanel.zip'
-required = ['index.html', 'index.php', '.htaccess', 'api.php', 'server/.htaccess', 'server/api.php', 'server/database.php', 'server/schema.sql', 'server/validation.php', 'ads.txt']
+required = ['index.html', 'index.php', '.htaccess', 'api.php', 'server/.htaccess', 'server/api.php', 'server/database.php', 'server/schema.sql', 'server/validation.php', 'server/privacy.php', 'server/maintenance.php', 'ads.txt', 'privacy.html', 'cookies.html', 'terms.html', 'safety.html']
 for name in required:
     if not (source / name).is_file():
         raise SystemExit('Missing build file: ' + name)

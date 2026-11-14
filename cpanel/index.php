@@ -33,7 +33,10 @@ try {
     }
     $host = rtrim(strtolower((string)(parse_url('http://' . (string)($_SERVER['HTTP_HOST'] ?? ''), PHP_URL_HOST) ?? '')), '.');
     $localHost = $host === '' || $host === 'localhost' || str_ends_with($host, '.localhost') || in_array($host, ['[::1]', '::1'], true) || (bool)preg_match('/^127\./D', $host);
-    $adsEnabled = getenv('SEARCHPARTY_ADSENSE_ENABLED') !== '0';
+    // Advertising remains off until the operator explicitly enables it and has
+    // configured Google's certified consent platform. This flag is a deployment
+    // safeguard, not a substitute for consent or a consent-management platform.
+    $adsEnabled = getenv('SEARCHPARTY_ADSENSE_ENABLED') === '1' && getenv('SEARCHPARTY_CMP_READY') === '1';
     // Returning members never load advertising code, even on the public home.
     $hasGuestCookie = array_key_exists('sp_guest', $_COOKIE);
     $adPage = $homePath && !$privateQuery && !$localHost && !$hasGuestCookie && $adsEnabled;

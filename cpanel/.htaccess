@@ -8,6 +8,7 @@ RewriteRule ^server(?:/|$) - [F,L]
 RewriteRule (^|/)\. - [F,L]
 RewriteRule \.(?:sqlite|sqlite3|db|sql|log|bak|ini|env)(?:[-.].*)?$ - [F,L,NC]
 RewriteRule ^api(?:/.*)?$ api.php [QSA,L]
+RewriteRule ^(privacy|cookies|terms|safety)/?$ $1.html [L]
 RewriteRule ^index\.html$ index.php [QSA,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -22,4 +23,8 @@ Header always set Permissions-Policy "geolocation=(self), camera=(), microphone=
 <Files "index.html">
 Header set Cache-Control "no-cache"
 </Files>
+<FilesMatch "^(privacy|cookies|terms|safety)\.html$">
+Header always set Content-Security-Policy "default-src 'none'; style-src 'self'; img-src 'self'; font-src 'self'; base-uri 'none'; frame-ancestors 'self'"
+Header always set Cache-Control "no-cache"
+</FilesMatch>
 </IfModule>

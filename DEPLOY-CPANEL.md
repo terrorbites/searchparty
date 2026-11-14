@@ -117,7 +117,9 @@ The automated integration runner deliberately refuses public URLs, so it cannot 
 
 ## AdSense setup and page separation
 
-The package includes publisher `ca-pub-8610536439975607` and the corresponding root `ads.txt` declaration. The standard AdSense loader is emitted only on the public homepage for visitors without a `sp_guest` cookie. Search, demo, create and app query routes, other paths, existing guest browsers and localhost previews omit the loader. Entering the application uses a full document navigation so the public homepage script does not remain in a search document.
+Advertising is **off by default**, as chosen for launch. The package retains publisher `ca-pub-8610536439975607` and its root `ads.txt` declaration, which does not execute advertising code. The AdSense loader requires both `SEARCHPARTY_ADSENSE_ENABLED=1` and `SEARCHPARTY_CMP_READY=1`; these switches are operator declarations, not an automated check that consent is valid. Keep them off until the certified CMP is configured and verified, site approval is complete, and the policies have been updated to describe the actual advertising providers, cookies and choices.
+
+If enabled after that work, the standard AdSense loader is emitted only on the public homepage for visitors without a `sp_guest` cookie. Search, demo, create and app query routes, policy pages, other paths, existing guest browsers and localhost previews omit it. Entering the application uses a full document navigation so the public homepage script does not remain in a search document.
 
 This is **not a sandboxed advertising integration**. Google's script executes in the public homepage document. A fresh CSP nonce authorises it; the nonce does not isolate the script or remove its normal page privileges. Private application documents keep their more restrictive CSP and contain no AdSense loader. The public policy follows [Google's AdSense CSP guidance](https://support.google.com/adsense/answer/16283098?hl=en).
 
@@ -131,7 +133,7 @@ To omit advertising entirely, set `SEARCHPARTY_ADSENSE_ENABLED=0` in the PHP env
 SetEnv SEARCHPARTY_ADSENSE_ENABLED 0
 ```
 
-The loader is enabled on eligible public pages when that setting is absent or has another value. Keep it disabled while account or consent setup is incomplete, and confirm the intended setting reaches PHP after upload.
+An absent setting keeps advertising off. Either setting being absent or different from the exact value `1` prevents the loader. Confirm the intended PHP environment after upload. No optional-cookie consent banner is needed for the current essential-storage-only version; the cookie information page explains the requested features and their storage.
 
 After rebuilding and starting the PHP preview, inspect the page separation without loading Google resources:
 
@@ -140,7 +142,27 @@ $env:TEST_BASE_URL = 'http://127.0.0.1:8789'
 node tests/page-shell.mjs
 ```
 
-This test connects only to localhost and overrides the HTTP Host header to exercise public-homepage rendering. It reads HTML and headers without executing scripts, following redirects or requesting advertisements. It checks private/query/cookie/local-host exclusions, nonce consistency and freshness, and the restrictive private-page CSP. To also test the environment switch, start a second local PHP preview with `SEARCHPARTY_ADSENSE_ENABLED=0` and set `TEST_ADS_DISABLED_BASE_URL` to that server's local URL before running the same script. No API test records are created by the page-shell checks.
+This test connects only to localhost and overrides the HTTP Host header to exercise public-homepage rendering. It reads HTML and headers without executing scripts, following redirects or requesting advertisements. It checks the default-off behaviour, private/query/cookie/local-host exclusions, nonce consistency and freshness, and static policy pages. Optional `TEST_ADS_ENABLED_BASE_URL` points to a local preview with both readiness flags equal to `1`; `TEST_ADS_DISABLED_BASE_URL` can point to a preview with only the advertising flag enabled, to confirm the second gate still blocks it. No API test records are created by these checks.
+
+## Privacy pages and operations
+
+The build generates `/privacy`, `/cookies`, `/terms` and `/safety` as standalone HTML using the approved copy in `app/lib/legal-content.ts`. They load no scripts, advertising or maps, set no cookies and make no profile API requests. They work without JavaScript. Frontend development also renders the same content in React. Review `legal/LAUNCH-CHECKS.md` for the operator tasks that software and policy text cannot complete.
+
+New guest profiles must confirm they are adults and accept the current Terms. This declaration is not identity verification or highly effective age assurance. The `Your data` controls export the current browser profile's data and allow its deletion; removal of organised searches requires an explicit additional acknowledgement. Email remains available for requests that cannot be handled from the original browser.
+
+The database migrates existing records on the first API request. Retention housekeeping removes searches eligible after 90 days closed or 180 days without qualifying activity, clears stale GPS positions and removes expired unreferenced profiles. Cleanup is batched and also has a CLI entry point for a daily cPanel cron job. See the maintenance instructions and operator checklist; no cron is installed by a Git deployment. Back up production SQLite consistently before the first migration. Hosting logs, provider backups and support email have separate retention and access procedures.
+
+### Scheduled retention cleanup
+
+The deployed maintenance script is `/home/terror/public_html/server/maintenance.php`. It refuses HTTP execution. Use the PHP 8.1+ command-line binary recommended by Brixly for this account, with PDO SQLite enabled; confirm the binary and private data directory before configuring a cron job. First inspect eligible records:
+
+```sh
+SEARCHPARTY_DATA_DIR=/home/terror/.searchparty-data /PATH/TO/PHP /home/terror/public_html/server/maintenance.php --dry-run
+```
+
+Replace `/PATH/TO/PHP` with the confirmed executable. `--dry-run` does not delete records, but opening the database may create it or run a pending schema migration. It is not a completely read-only migration preview. Once verified, configure cPanel **Cron Jobs** to run the same command without `--dry-run` daily, for example at 03:15 server time. Save output in a private log or receive cron output by email and check failures. Each CLI run processes at most 100 eligible searches; a backlog may need further runs. API requests also process smaller batches, but scheduling cleanup avoids depending on visits to a quiet site.
+
+The privacy notice describes eligibility and batching rather than promising deletion at an exact minute. Do not set up a second maintenance database by accidentally using a different data directory from the API. Confirm provider backup/log deletion periods separately.
 
 ## Common deployment issues
 
