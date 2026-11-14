@@ -64,7 +64,7 @@ Use this deployment only while this account's main-domain `public_html` belongs 
 
 For subsequent releases, rebuild and package locally, copy `outputs/searchparty-cpanel.zip` to `deployment/searchparty-cpanel.zip`, and commit/push both source changes and the ZIP before repeating those two cPanel actions. Follow [cPanel's pull deployment guide](https://docs.cpanel.net/knowledge-base/web-services/guide-to-git-set-up-deployment/) for the interface.
 
-The `/shop` path is reserved for a separately installed WordPress/WooCommerce shop. The root rewrite rules pass that path to the shop's own `.htaccess`, including product links, REST requests and payment callbacks. The Search Pals ZIP does not install WordPress, configure payments or contain shop data. The deployment script leaves the `shop` directory in place; back up its files and database separately before updating it. Do not add a public shop link or accept orders until the shop and its payment/fulfilment settings have been verified.
+The `/shop` path is reserved for a separately installed WordPress/WooCommerce shop. The root rewrite rules pass that path to the shop's own `.htaccess`, including product links, REST requests and payment callbacks. The Search Pals ZIP does not install WordPress, configure payments or contain shop data. The deployment script leaves the `shop` directory in place; back up its files and database separately before updating it. The homepage navigation and site footer link to `/shop/` at the operator's request. Keep WooCommerce in Coming soon mode until the shop and its payment/fulfilment settings have been verified; adding these links does not enable checkout or launch the shop.
 
 ## Private database directory
 

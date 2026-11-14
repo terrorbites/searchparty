@@ -9,6 +9,7 @@ export default function SiteFooter() {
       <a href="/safety">Search safety</a>
       <a href="/?app=1&privacy=1">Your data</a>
       <a href="/#support-search-pals">Support Search Pals</a>
+      <a href="/shop/">Shop</a>
     </nav>
   </footer>;
 }

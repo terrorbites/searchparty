@@ -25,6 +25,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .brand-mark::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: #a94c36; pointer-events: none; }
 .brand-mark svg { position: relative; z-index: 1; width: 27px; height: 27px; padding: 3px; background: #fffefa; border-radius: 50%; transform: rotate(8deg); }
 .nav-link { color: #424741; font-size: 13px; }
+.site-header .shop-link { display: inline-flex; min-width: 44px; min-height: 44px; justify-content: center; white-space: nowrap; }
 .site-header .profile-button { min-width: 44px; min-height: 44px; justify-content: center; }
 .button { border-radius: 5px; font-weight: 700; box-shadow: 0 3px 0 #080a08; }
 .button:hover:not(:disabled) { box-shadow: 0 2px 0 #080a08; }
@@ -103,6 +104,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 @media (max-width: 480px) {
   .app:not(.in-room) .site-header .button { display: none; }
-  .app:not(.in-room) .public-searches-link > span { display: inline; }
+  .app:not(.in-room) .public-searches-link > span { display: none; }
   .app:not(.in-room) .public-searches-link { font-size: 12px; }
 }
